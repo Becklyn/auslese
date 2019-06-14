@@ -1,0 +1,30 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "es2015",
+        "jsx": "react",
+        "jsxFactory": "h",
+        "declaration": true,
+        "sourceMap": false,
+        "removeComments": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "noImplicitThis": true,
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "alwaysStrict": false,
+        "allowSyntheticDefaultImports": true,
+        "lib": [
+            "dom",
+            "es5",
+            "es2015"
+        ]
+    },
+    "include": [
+        "**/*.tsx",
+        "**/*.ts"
+    ],
+    "exclude": [
+        "node_modules"
+    ]
+}
