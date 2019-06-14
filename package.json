@@ -2,6 +2,16 @@
     "name": "auslese",
     "description": "A tiny + fast choice / dropdown preact component.",
     "version": "0.0.1",
+    "scripts": {
+        "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals",
+        "dev": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty -w",
+        "prepublishOnly": "npm run-script build"
+    },
+    "main": "js/Auslese.js",
+    "dependencies": {
+        "downshift": "^3.2.10",
+        "preact": "^10.0.0-beta.2"
+    },
     "devDependencies": {
         "typescript": "^3.4.5"
     }

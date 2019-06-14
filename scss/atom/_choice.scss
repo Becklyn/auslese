@@ -1,0 +1,26 @@
+@import "../helper/variables";
+
+.auslese-choice {
+    .auslese-choice-button {
+        padding: .5rem 1rem;
+        display: flex;
+        text-align: left;
+        width: 100%;
+        color: $auslese-choice-text;
+
+        &:hover,
+        &:focus {
+            background-color: $auslese-choice-focus-bg;
+        }
+
+        &:disabled {
+            color: $auslese-choice-disabled;
+            background-color: transparent;
+            cursor: not-allowed;
+        }
+    }
+
+    &.is-selected .auslese-choice-button::before {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='currentColor' d='M9.3 18.7L2.7 12l1.8-1.9 4.8 4.8L19.5 4.8l1.8 1.9z'%3E%3C/path%3E%3C/svg%3E");
+    }
+}

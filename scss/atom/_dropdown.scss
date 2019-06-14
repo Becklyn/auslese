@@ -1,0 +1,12 @@
+@import "../helper/variables";
+
+.auslese-dropdown {
+    min-width: 100%;
+    box-shadow: $auslese-dropdown-shadow;
+    background-color: $auslese-bg;
+
+    .auslese-dropdown-window {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+}

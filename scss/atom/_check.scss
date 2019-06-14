@@ -1,0 +1,16 @@
+@import "../helper/mixins";
+
+.auslese-check {
+    $size: 2.4rem;
+    @include fixed-flex-width($size);
+    content: "";
+    height: $size;
+    margin-right: 1rem;
+    border-radius: .2rem;
+
+    svg {
+        display: block;
+        height: 100%;
+        width: 100%;
+    }
+}

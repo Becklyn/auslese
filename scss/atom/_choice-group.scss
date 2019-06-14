@@ -1,0 +1,23 @@
+@import "../helper/variables";
+
+.auslese-choice-group {
+    padding: 10px;
+
+    + .selection-group {
+        margin-top: 10px;
+    }
+
+    li {
+        display: block;
+
+        + li {
+            margin-top: 5px;
+        }
+    }
+
+    .auslese-group-title {
+        padding: .5rem 1rem;
+        color: $auslese-group-title;
+        cursor: default;
+    }
+}

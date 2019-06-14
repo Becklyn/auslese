@@ -7,7 +7,7 @@
         "declaration": true,
         "sourceMap": false,
         "removeComments": true,
-        "strict": true,
+        "strict": false,
         "strictNullChecks": true,
         "noImplicitThis": true,
         "moduleResolution": "node",

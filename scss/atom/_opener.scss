@@ -1,0 +1,33 @@
+@import "../helper/variables";
+
+
+.auslese-opener {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    border: 1px solid $auslese-border-color;
+    line-height: 1;
+    background-color: $auslese-bg;
+
+    .auslese-current {
+        @include text-overflow;
+        padding: 12px 20px;
+        color: $auslese-current;
+
+        &.is-placeholder {
+            color: $auslese-current-placeholder;
+        }
+    }
+
+    .auslese-current-chevron {
+        @include fixed-flex-width(50px);
+        @include center-children;
+        margin-left: auto;
+        border-left: .1rem solid $auslese-border-color;
+    }
+
+    svg {
+        @include transition(transform);
+        display: block;
+    }
+}

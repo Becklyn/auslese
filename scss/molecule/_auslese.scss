@@ -1,0 +1,35 @@
+@import "../helper/variables";
+
+.auslese {
+    max-width: 60rem;
+    display: block;
+    position: relative;
+    font-weight: 400;
+    font-size: 14px;
+
+    .auslese-dropdown-container {
+        position: absolute;
+        top: 100%;
+        padding-top: 10px;
+        min-width: 100%;
+    }
+
+    &.is-open {
+        .auslese-current-chevron svg {
+            transform: rotateZ(180deg);
+        }
+    }
+
+    &.is-multi-select {
+        .auslese-check {
+            border: 1px solid $auslese-multi-check-border;
+        }
+
+        .is-selected {
+            .auslese-check{
+                background-color: $auslese-multi-check-selected-bg;
+                color: $auslese-multi-check-selected;
+            }
+        }
+    }
+}
