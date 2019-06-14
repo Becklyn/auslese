@@ -1,0 +1,9 @@
+/.idea
+/node_modules
+/package-lock.json
+
+# ignore build files
+*.d.ts
+*.js
+!/src/@types/*.d.ts
+!/tests/**/*.js
