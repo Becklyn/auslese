@@ -9,7 +9,6 @@
     },
     "main": "js/Auslese.js",
     "dependencies": {
-        "downshift": "^3.2.10",
         "preact": "^10.0.0-beta.2"
     },
     "devDependencies": {

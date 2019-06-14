@@ -2,7 +2,6 @@ import {Component, h} from "preact";
 import {AusleseTypes} from "./@types/auslese";
 import {getSelectedChoices} from "./lib/helper";
 import {CheckIcon, ChevronIcon} from "./lib/icons";
-import Downshift from "downshift/preact";
 
 export interface ControlledAusleseProps
 {
@@ -12,7 +11,7 @@ export interface ControlledAusleseProps
     selections?: AusleseTypes.Selections;
     groups: AusleseTypes.ChoiceGroup[];
     onButtonClick?: () => void;
-    onElementClick?: (choice: AusleseTypes.Choice) => void;
+    onElementClick?: (choice: AusleseTypes.Choice, event: Event) => void;
 }
 
 
@@ -27,27 +26,15 @@ export class ControlledAuslese extends Component<ControlledAusleseProps>
         let selections = props.selections || new WeakMap<AusleseTypes.Choice, boolean>();
 
         return (
-            <Downshift
-                onChange={selection => console.log(selection)}
-                itemToString={item => item ? item.label : ""}
-            >{
-                ({
-                    getInputProps,
-                    getToggleButtonProps,
-                    getMenuProps,
-                }) => (
-                    <div class={containerClass}>
-                        <button type="button" class="auslese-opener" onClick={props.onButtonClick}>
-                            {this.renderCurrentLabel(props.groups, selections, props.placeholder)}
-                            <span className="auslese-current-chevron">
-                            <ChevronIcon/>
-                        </span>
-                        </button>
-                        {props.open ? this.renderDropdown(props.groups, selections) : null}
-                    </div>
-                )
-            }
-            </Downshift>
+            <div class={containerClass}>
+                <button type="button" class="auslese-opener" onClick={props.onButtonClick}>
+                    {this.renderCurrentLabel(props.groups, selections, props.placeholder)}
+                    <span className="auslese-current-chevron">
+                        <ChevronIcon/>
+                    </span>
+                </button>
+                {props.open ? this.renderDropdown(props.groups, selections) : null}
+            </div>
         );
     }
 
@@ -78,7 +65,8 @@ export class ControlledAuslese extends Component<ControlledAusleseProps>
             <div class="auslese-dropdown-container">
                 <div className="auslese-dropdown">
                     <div className="auslese-dropdown-window">
-                        {groups.map(group => this.renderGroup(group, selections))}
+                        {this.props.multiple && this.renderSelectedGroup(groups, selections)}
+                        {groups.map(group => this.renderGroup(group.choices, group.headline, selections))}
                     </div>
                 </div>
             </div>
@@ -87,28 +75,49 @@ export class ControlledAuslese extends Component<ControlledAusleseProps>
 
 
     /**
+     * Renders the special "selected only" group at the top
+     */
+    private renderSelectedGroup (groups: AusleseTypes.ChoiceGroup[], selections: AusleseTypes.Selections) : preact.ComponentChild
+    {
+        let selected = getSelectedChoices(groups, selections);
+
+        if (!selected.length)
+        {
+            return null;
+        }
+
+        return this.renderGroup(selected, null, selections, "auslese-selected-choices")
+    }
+
+
+    /**
      * Renders a single choice group
      */
-    private renderGroup (group: AusleseTypes.ChoiceGroup, selections: AusleseTypes.Selections): preact.ComponentChild
+    private renderGroup (
+        choices: AusleseTypes.Choice[],
+        headline: string|null,
+        selections: AusleseTypes.Selections,
+        groupClass?: string
+    ): preact.ComponentChild
     {
-        if (!group.choices.length)
+        if (!choices.length)
         {
             return null;
         }
 
         return (
-            <div class="auslese-choice-group">
-                {group.headline && (
-                    <h4 class="auslese-group-title">{group.headline}</h4>
+            <div class={`auslese-choice-group ${groupClass}`}>
+                {headline && (
+                    <h4 class="auslese-group-title">{headline}</h4>
                 )}
                 <ul>
-                    {group.choices.map(choice => (
+                    {choices.map(choice => (
                         <li class={`auslese-choice ${selections.get(choice) ? "is-selected" : ""}`}>
                             <button
                                 type="button"
                                 class="auslese-choice-button"
                                 disabled={choice.disabled}
-                                onClick={!choice.disabled  ? () => this.onElementClick(choice) : undefined}
+                                onClick={!choice.disabled  ? (event) => this.onElementClick(choice, event) : undefined}
                             >
                                 <i class="auslese-check">{selections.get(choice) && <CheckIcon />}</i>
                                 {choice.label}
@@ -124,11 +133,11 @@ export class ControlledAuslese extends Component<ControlledAusleseProps>
     /**
      * Callback on element click
      */
-    private onElementClick (choice: AusleseTypes.Choice) : void
+    private onElementClick (choice: AusleseTypes.Choice, event: Event) : void
     {
         if (this.props.onElementClick)
         {
-            this.props.onElementClick(choice);
+            this.props.onElementClick(choice, event);
         }
     }
 }

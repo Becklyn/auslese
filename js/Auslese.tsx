@@ -1,6 +1,7 @@
 import {Component, h} from "preact";
 import {AusleseTypes} from "./@types/auslese";
 import {ControlledAuslese, ControlledAusleseProps} from "./ControlledAuslese";
+import {isChildElement} from "./lib/helper";
 
 
 interface AusleseProps extends ControlledAusleseProps
@@ -18,14 +19,27 @@ interface AusleseState
 export class Auslese extends Component<AusleseProps, AusleseState>
 {
     private selections: AusleseTypes.Selections;
+    private onBodyClickBound: (event: Event) => void;
+    private selectRef: Component|null = null;
 
+    /**
+     *
+     */
     public constructor (props: AusleseProps)
     {
         super(props);
         this.selections = new WeakMap<AusleseTypes.Choice, boolean>();
         this.state = {
-            open: true,
+            open: false,
         };
+
+        this.onBodyClickBound = event => this.onBodyClick(event);
+    }
+
+
+    public componentDidMount (): void
+    {
+        this.open();
     }
 
 
@@ -72,7 +86,8 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                 multiple={props.multiple}
                 selections={this.selections}
                 onButtonClick={() => this.toggleOpen()}
-                onElementClick={choice => this.onChoiceClick(choice)}
+                onElementClick={(choice, event) => this.onChoiceClick(choice)}
+                ref={el => this.selectRef = el}
             />
         );
     }
@@ -81,8 +96,10 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     /**
      * Callback on when a choice was clicked
      */
-    private onChoiceClick (choice: AusleseTypes.Choice) : void
+    private onChoiceClick (choice: AusleseTypes.Choice, event: Event) : void
     {
+        event.preventDefault();
+
         if (this.props.multiple)
         {
             this.selections.set(choice, !this.selections.get(choice));
@@ -92,8 +109,20 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         {
             this.selections = new WeakMap<AusleseTypes.Choice, boolean>();
             this.selections.set(choice, true);
-            this.setState({open: false});
+            this.close();
         }
+    }
+
+    private open ()
+    {
+        document.body.addEventListener("click", this.onBodyClickBound, false);
+        this.setState({open: true});
+    }
+
+    private close ()
+    {
+        document.body.removeEventListener("click", this.onBodyClickBound, false);
+        this.setState({open: false});
     }
 
 
@@ -102,9 +131,31 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private toggleOpen ()
     {
-        this.setState((state: AusleseState) => {
-            state.open = !state.open;
-            return state;
-        })
+        if (this.state.open)
+        {
+            this.close();
+        }
+        else
+        {
+            this.open();
+        }
+    }
+
+
+    /**
+     * Callback on when the body was clicked
+     */
+    private onBodyClick (event)
+    {
+        if (!this.selectRef)
+        {
+            return;
+        }
+
+        if (!isChildElement(this.selectRef.base as Element, event.target))
+        {
+            console.log(this.selectRef.base as Element, event.target);
+//            this.close();
+        }
     }
 }

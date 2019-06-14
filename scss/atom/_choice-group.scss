@@ -20,4 +20,20 @@
         color: $auslese-group-title;
         cursor: default;
     }
+
+    &.auslese-selected-choices {
+        position: relative;
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+
+        &::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 2rem;
+            right: 2rem;
+            height: .1rem;
+            background-color: $auslese-border-color;
+        }
+    }
 }

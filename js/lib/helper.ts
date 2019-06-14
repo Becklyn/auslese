@@ -23,3 +23,23 @@ export function getSelectedChoices (groups: AusleseTypes.ChoiceGroup[], selectio
 
     return selected;
 }
+
+/**
+ * Returns whether the node is a child element from the parent (includes being the node itself).
+ */
+export function isChildElement (parent: Node, node: Node) : boolean
+{
+    let pointer: Node|null = node;
+
+    while (pointer !== null)
+    {
+        if (pointer === parent)
+        {
+            return true;
+        }
+
+        pointer = pointer.parentNode;
+    }
+
+    return false;
+}
