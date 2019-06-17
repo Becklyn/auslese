@@ -18,19 +18,19 @@
         padding-top: 10px;
     }
 
-    &.is-open {
+    &.auslese-open {
         .auslese-current-chevron svg {
             transform: rotateZ(180deg);
         }
     }
 
     &.auslese-tag-select,
-    &.auslese-multi-select {
+    &.auslese-multiple-select {
         .auslese-check {
             border: 1px solid $auslese-multi-check-border;
         }
 
-        .is-selected {
+        .auslese-selected {
             .auslese-check {
                 background-color: $auslese-multi-check-selected-bg;
                 color: $auslese-multi-check-selected;

@@ -4,9 +4,9 @@ import {AusleseTypes} from "../@types/auslese";
 /**
  * Filters all selected choices from the set of all choices
  */
-export function getSelectedChoices (groups: AusleseTypes.Group[], selections: AusleseTypes.Selections) : AusleseTypes.Choice[]
+export function getSelectedChoices (choices: AusleseTypes.Choice[], selections: AusleseTypes.Selections) : AusleseTypes.Choice[]
 {
-    return flattenChoices(groups).filter(
+    return choices.filter(
     choice => selections.get(choice)
     );
 }
@@ -84,4 +84,23 @@ export function prepareGroups (unsorted: (AusleseTypes.Choice|AusleseTypes.Group
     }
 
     return groups;
+}
+
+
+/**
+ * Combines all class names in the map to a single class string
+ */
+export function classes (map : {[key: string] : boolean}) : string
+{
+    let list: string[] = [];
+
+    for (let key in map)
+    {
+        if (map.hasOwnProperty(key) && map[key])
+        {
+            list.push(key);
+        }
+    }
+
+    return list.join(" ");
 }

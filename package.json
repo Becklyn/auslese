@@ -9,6 +9,7 @@
     },
     "main": "js/Auslese.js",
     "dependencies": {
+        "match-sorter": "^3.1.1",
         "preact": "^10.0.0-beta.2"
     },
     "devDependencies": {
