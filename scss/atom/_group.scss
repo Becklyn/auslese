@@ -12,15 +12,16 @@
     }
 
     .auslese-group-title {
-        padding: .5rem 1rem;
+        padding: 0 1rem .5rem;
         color: $auslese-group-title;
         cursor: default;
+        font-weight: 700;
     }
 
     &.auslese-selections {
         position: relative;
-        padding-top: 1.5rem;
-        padding-bottom: 1.5rem;
+        padding-top: 5px;
+        padding-bottom: 15px;
 
         &::after {
             content: "";

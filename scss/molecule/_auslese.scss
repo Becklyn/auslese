@@ -14,13 +14,18 @@
         min-width: 100%;
     }
 
+    .auslese-clear + .auslese-search {
+        padding-top: 10px;
+    }
+
     &.is-open {
         .auslese-current-chevron svg {
             transform: rotateZ(180deg);
         }
     }
 
-    &.is-multi-select {
+    &.auslese-tag-select,
+    &.auslese-multi-select {
         .auslese-check {
             border: 1px solid $auslese-multi-check-border;
         }
@@ -30,10 +35,14 @@
                 background-color: $auslese-multi-check-selected-bg;
                 color: $auslese-multi-check-selected;
             }
+
+            :disabled .auslese-check {
+                background-color: $auslese-choice-disabled;
+            }
         }
     }
 
-    &.is-tags {
+    &.auslese-tag-select {
         .auslese-current {
             cursor: text;
             padding-top: 8px;
