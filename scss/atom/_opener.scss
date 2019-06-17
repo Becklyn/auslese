@@ -28,6 +28,12 @@
     .auslese-current-chevron {
         @include fixed-flex-width(50px);
         @include center-children;
+
+        &:focus,
+        &:hover {
+            background-color: $auslese-tag-focus-bg;
+            color: $auslese-tag-focus;
+        }
     }
 
     svg {
