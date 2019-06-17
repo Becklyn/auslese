@@ -1,0 +1,19 @@
+@keyframes auslese-loading {
+    from {
+        transform: rotateZ(0deg);
+    }
+
+    to {
+        transform: rotateZ(360deg);
+    }
+}
+
+.auslese-loading {
+    padding: 10px 20px 20px;
+
+    svg {
+        width: 15px;
+        height: 15px;
+        animation: auslese-loading 1s linear infinite;
+    }
+}

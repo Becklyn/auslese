@@ -1,11 +1,7 @@
 @import "../helper/variables";
 
-.auslese-choice-group {
+.auslese-group {
     padding: 10px;
-
-    + .selection-group {
-        margin-top: 10px;
-    }
 
     li {
         display: block;
@@ -21,7 +17,7 @@
         cursor: default;
     }
 
-    &.auslese-selected-choices {
+    &.auslese-selections {
         position: relative;
         padding-top: 1.5rem;
         padding-bottom: 1.5rem;

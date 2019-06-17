@@ -32,4 +32,21 @@
             }
         }
     }
+
+    &.is-tags {
+        .auslese-current {
+            cursor: text;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        .auslese-current-chevron,
+        .auslese-current-clear {
+            border-left: 1px solid $auslese-border-color;
+        }
+    }
+
+    svg {
+        display: block;
+    }
 }

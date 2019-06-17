@@ -52,3 +52,14 @@
         transition-property: $properties;
     }
 }
+
+
+///
+/// Fills the flex item
+///
+@mixin flex-fill-width {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+

@@ -10,7 +10,7 @@
     background-color: $auslese-bg;
 
     .auslese-current {
-        @include text-overflow;
+        @include flex-fill-width;
         padding: 12px 20px;
         color: $auslese-current;
 
@@ -19,15 +19,18 @@
         }
     }
 
+    .auslese-current-text {
+        @include text-overflow;
+        text-align: left;
+        cursor: pointer;
+    }
+
     .auslese-current-chevron {
         @include fixed-flex-width(50px);
         @include center-children;
-        margin-left: auto;
-        border-left: .1rem solid $auslese-border-color;
     }
 
     svg {
         @include transition(transform);
-        display: block;
     }
 }
