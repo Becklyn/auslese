@@ -12,6 +12,16 @@
         "preact": "^10.0.0-beta.2"
     },
     "devDependencies": {
+        "ava": "^2.1.0",
+        "esm": "^3.2.25",
         "typescript": "^3.4.5"
+    },
+    "ava": {
+        "files": [
+            "tests/**/*"
+        ],
+        "require": [
+            "esm"
+        ]
     }
 }
