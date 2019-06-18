@@ -1,25 +1,25 @@
 import test from "ava";
-import {prepareGroups, flattenChoices} from "../../js/lib/helper";
+import {sanitizeGroups, flattenChoices} from "../../js/lib/helper";
 
 
-test("prepareGroups: pass single group directly", t => {
+test("sanitizeGroups: pass single group directly", t => {
     let input = [
         {headline: null, choices: [1,2,3]},
     ];
 
-    t.deepEqual(prepareGroups(input), [{headline: null, choices: [1, 2, 3]}]);
+    t.deepEqual(sanitizeGroups(input), [{headline: null, choices: [1, 2, 3]}]);
 });
 
-test("prepareGroups: pass single choice directly", t => {
+test("sanitizeGroups: pass single choice directly", t => {
     let input = [
         {label: "test"},
     ];
 
-    t.deepEqual(prepareGroups(input), [{headline: null, choices: [{label: "test"}]}]);
+    t.deepEqual(sanitizeGroups(input), [{headline: null, choices: [{label: "test"}]}]);
 });
 
 
-test("prepareGroups: mixed test", t => {
+test("sanitizeGroups: mixed test", t => {
     let input = [
         {label: "test"},
         {headline: null, choices: [1,2,3]},
@@ -30,7 +30,7 @@ test("prepareGroups: mixed test", t => {
         {label: "test 5"},
     ];
 
-    t.deepEqual(prepareGroups(input), [
+    t.deepEqual(sanitizeGroups(input), [
         {headline: null, choices: [{label: "test"}]},
         {headline: null, choices: [1, 2, 3]},
         {headline: null, choices: [

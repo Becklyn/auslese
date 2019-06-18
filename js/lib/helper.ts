@@ -117,7 +117,7 @@ export function flattenChoices (groups: AusleseTypes.Group[]) : AusleseTypes.Cho
 /**
  * Prepares the mixed choices + groups to just be groups
  */
-export function prepareGroups (unsorted: (AusleseTypes.Choice|AusleseTypes.Group)[]) : AusleseTypes.Group[]
+export function sanitizeGroups (unsorted: (AusleseTypes.Choice|AusleseTypes.Group)[]) : AusleseTypes.Group[]
 {
     let groups: AusleseTypes.Group[] = [];
     let lastGroup: AusleseTypes.Group|null = null;
@@ -171,46 +171,3 @@ export function classes (map : {[key: string] : boolean}) : string
 
     return list.join(" ");
 }
-
-
-function getFollowingActiveChoice (choices: AusleseTypes.Choice[], index: number, up: boolean) : AusleseTypes.Choice|null
-{
-    let delta = up ? -1 : 1;
-
-    for (let i = index; i += delta; i < choices.length && i >= 0)
-    {
-        if (!choices[i].disabled)
-        {
-            return choices[i];
-        }
-    }
-
-    return null;
-}
-
-//function getFocusChangeDataStructure (choices: AusleseTypes.Choice[], selections: AusleseTypes.Selections) : FocusedChoice[]
-//{
-//    let result: FocusedChoice[] = [];
-//
-//    getSelectedChoices(choices, selections).forEach(
-//        choice => result.push([choice, true])
-//    );
-//
-//    return result;
-//}
-//
-//
-//export function getFollowingFocus (choices: AusleseTypes.Choice[], selections: AusleseTypes.Selections, focus: FocusedChoice, up: boolean) : AusleseTypes.Choice|null
-//{
-//    let delta = up ? -1 : 1;
-//    let selected = getSelectedChoices(choices, selections);
-//
-//    if (null === focus)
-//    {
-//        return up
-//            ? null
-//            : getFollowingActiveChoice(selected, 0, up) || getFollowingActiveChoice(choices, 0, up);
-//    }
-//
-//
-//}

@@ -9,7 +9,7 @@ import {
     focusableList,
     getSelectedChoices,
     isChildElement,
-    prepareGroups,
+    sanitizeGroups,
 } from "./lib/helper";
 import {ChevronIcon, LoadingIcon, SearchIcon} from "./lib/icons";
 
@@ -43,6 +43,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     private inlineSearch: HTMLElement|undefined;
     private onBodyClickBound: (event: Event) => void;
 
+
     /**
      * @inheritDoc
      */
@@ -68,9 +69,10 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private initState (props: Readonly<AusleseProps>) : AusleseState
     {
-        let groups = prepareGroups(props.choices);
+        let groups = sanitizeGroups(props.choices);
         let flattened = flattenChoices(groups);
         let type = props.type || "single";
+        let selections = props.selections || new WeakMap<AusleseTypes.Choice, boolean>();
 
         return {
             groups: groups,
@@ -79,7 +81,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             search: "",
             type: type,
             placeholder: props.placeholder || "Bitte wählen",
-            selections: props.selections || new WeakMap<AusleseTypes.Choice, boolean>(),
+            selections: selections,
             loading: false,
             hasSearchForm: "tag" !== type && flattened.length > 5,
             focus: null,
@@ -307,16 +309,10 @@ export class Auslese extends Component<AusleseProps, AusleseState>
 
 
     /**
-     *
+     * Moves the choice focus in the given direction
      */
     private moveChoiceFocus (up: boolean) : void
     {
-        console.log(buildRenderGroups(
-            this.state.groups,
-            this.state.selections,
-            this.state.type,
-            this.state.search
-        ));
         let list = focusableList(buildRenderGroups(
             this.state.groups,
             this.state.selections,
@@ -356,32 +352,35 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     /**
      * Global callback for key down
      */
-    private onKeyDown (e: KeyboardEvent) : void
+    private onKeyDown (event: KeyboardEvent) : void
     {
-        let key = e.key.toLowerCase();
+        let handled = false;
+        let key = event.key.toLowerCase();
 
-        if (" " === key)
+        switch (key)
         {
-            if (this.state.focus !== null)
-            {
-                this.moveChoiceFocus(false);
-                this.toggleChoice(this.state.focus);
-                e.preventDefault();
-            }
+            case " ":
+                if (this.state.focus !== null)
+                {
+                    this.moveChoiceFocus(false);
+                    this.toggleChoice(this.state.focus);
+                }
+                break;
 
-            return;
+            case "tab":
+            case "escape":
+                this.close();
+                break;
+
+            case "arrowdown":
+            case "arrowup":
+                this.moveChoiceFocus("arrowup" === key);
+                break;
         }
 
-        if ("tab" === key || "escape" === key)
+        if (handled)
         {
-            e.preventDefault();
-            return this.close();
-        }
-
-        if ("arrowdown" === key || "arrowup" === key)
-        {
-            e.preventDefault();
-            return this.moveChoiceFocus("arrowup" === key);
+            event.preventDefault();
         }
     }
 }
