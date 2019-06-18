@@ -1,4 +1,5 @@
 import {AusleseTypes} from "../@types/auslese";
+import matchSorter from "match-sorter";
 
 
 /**
@@ -29,6 +30,72 @@ export function isChildElement (parent: Node, node: Node) : boolean
     }
 
     return false;
+}
+
+/**
+ * Builds the choice groups for rendering
+ */
+export function buildRenderGroups (
+    groups: AusleseTypes.Group[],
+    selections: AusleseTypes.Selections,
+    type: AusleseTypes.SelectionType,
+    search: string
+) : AusleseTypes.Group[]
+{
+    let selected: AusleseTypes.Group = {headline: null, choices: []};
+    let result: AusleseTypes.Group[] = [];
+
+    if ("" !== search)
+    {
+        let filtered = matchSorter(flattenChoices(groups), search, {keys: ["label"]});
+
+        return filtered.length
+            ? [{headline: null, choices: filtered}]
+            : [];
+    }
+
+    groups.forEach(
+        group =>
+        {
+            let transformed: AusleseTypes.Group = {headline: group.headline, choices: []};
+
+            group.choices.forEach(
+                choice =>
+                {
+                    if (selections.get(choice) && "multiple" === type)
+                    {
+                        selected.choices.push(choice);
+                    }
+                    else
+                    {
+                        transformed.choices.push(choice);
+                    }
+                }
+            );
+
+            if (transformed.choices.length)
+            {
+                result.push(transformed);
+            }
+        }
+    );
+
+    if (selected.choices.length)
+    {
+        result.unshift(selected);
+    }
+
+    return result;
+}
+
+/**
+ * Returns the focusable list
+ */
+export function focusableList (groups: AusleseTypes.Group[]) : AusleseTypes.Choice[]
+{
+    return flattenChoices(groups).filter(
+        c => !c.disabled
+    );
 }
 
 
@@ -104,3 +171,46 @@ export function classes (map : {[key: string] : boolean}) : string
 
     return list.join(" ");
 }
+
+
+function getFollowingActiveChoice (choices: AusleseTypes.Choice[], index: number, up: boolean) : AusleseTypes.Choice|null
+{
+    let delta = up ? -1 : 1;
+
+    for (let i = index; i += delta; i < choices.length && i >= 0)
+    {
+        if (!choices[i].disabled)
+        {
+            return choices[i];
+        }
+    }
+
+    return null;
+}
+
+//function getFocusChangeDataStructure (choices: AusleseTypes.Choice[], selections: AusleseTypes.Selections) : FocusedChoice[]
+//{
+//    let result: FocusedChoice[] = [];
+//
+//    getSelectedChoices(choices, selections).forEach(
+//        choice => result.push([choice, true])
+//    );
+//
+//    return result;
+//}
+//
+//
+//export function getFollowingFocus (choices: AusleseTypes.Choice[], selections: AusleseTypes.Selections, focus: FocusedChoice, up: boolean) : AusleseTypes.Choice|null
+//{
+//    let delta = up ? -1 : 1;
+//    let selected = getSelectedChoices(choices, selections);
+//
+//    if (null === focus)
+//    {
+//        return up
+//            ? null
+//            : getFollowingActiveChoice(selected, 0, up) || getFollowingActiveChoice(choices, 0, up);
+//    }
+//
+//
+//}

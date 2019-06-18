@@ -7,11 +7,12 @@ let renderIndex = 0;
 
 export interface CurrentLabelsProps
 {
-    selectedChoices: AusleseTypes.Choice[];
+    choices: AusleseTypes.Choice[];
     placeholder: string;
     search: string;
     onInput: (e: Event) => void;
     onRemove: (choice: AusleseTypes.Choice) => void;
+    onFocus: () => void;
 }
 
 
@@ -21,7 +22,7 @@ export function CurrentLabels (props: CurrentLabelsProps): JSX.Element
 
     return (
         <label class="auslese-current auslese-tags" for={randomId}>
-            {props.selectedChoices.map(choice => (
+            {props.choices.map(choice => (
                 <span class="auslese-tag">
                     <span class="auslese-tag-label">{choice.label}</span>
                     <button type="button" class="auslese-tag-delete" onClick={() => props.onRemove(choice)}>
@@ -36,6 +37,7 @@ export function CurrentLabels (props: CurrentLabelsProps): JSX.Element
                 onInput={props.onInput}
                 placeholder={props.placeholder}
                 id={randomId}
+                onFocus={props.onFocus}
             />
         </label>
     );

@@ -3,11 +3,15 @@ import {AusleseTypes} from "./@types/auslese";
 import {CurrentLabels} from "./components/CurrentLabels";
 import {CurrentText} from "./components/CurrentText";
 import {Group} from "./components/Group";
-import {flattenChoices, getSelectedChoices, isChildElement, prepareGroups} from "./lib/helper";
+import {
+    buildRenderGroups,
+    flattenChoices,
+    focusableList,
+    getSelectedChoices,
+    isChildElement,
+    prepareGroups,
+} from "./lib/helper";
 import {ChevronIcon, LoadingIcon, SearchIcon} from "./lib/icons";
-import matchSorter from "match-sorter";
-
-
 
 export interface AusleseProps
 {
@@ -16,7 +20,6 @@ export interface AusleseProps
     placeholder?: string;
     emptyResultsMessage?: string;
     selections?: WeakMap<AusleseTypes.Choice, boolean>;
-    hasSearch?: boolean;
 }
 
 
@@ -25,17 +28,19 @@ export interface AusleseState
     groups: AusleseTypes.Group[];
     flattened: AusleseTypes.Choice[];
     open: boolean;
-    focus: AusleseTypes.Choice|null;
     search: string;
     type: AusleseTypes.SelectionType;
     placeholder: string;
     selections: WeakMap<AusleseTypes.Choice, boolean>;
     loading: boolean;
-    hasSearch: boolean;
+    hasSearchForm: boolean;
+    focus: AusleseTypes.Choice|null;
 }
+
 
 export class Auslese extends Component<AusleseProps, AusleseState>
 {
+    private inlineSearch: HTMLElement|undefined;
     private onBodyClickBound: (event: Event) => void;
 
     /**
@@ -66,26 +71,18 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         let groups = prepareGroups(props.choices);
         let flattened = flattenChoices(groups);
         let type = props.type || "single";
-        let hasSearch = undefined !== props.hasSearch
-            ? props.hasSearch
-            : flattened.length > 5;
-
-        if ("tag" === type)
-        {
-            hasSearch = false;
-        }
 
         return {
             groups: groups,
             flattened: flattened,
             open: false,
-            focus: null,
             search: "",
             type: type,
             placeholder: props.placeholder || "Bitte wählen",
             selections: props.selections || new WeakMap<AusleseTypes.Choice, boolean>(),
             loading: false,
-            hasSearch: hasSearch,
+            hasSearchForm: "tag" !== type && flattened.length > 5,
+            focus: null,
         };
     }
 
@@ -100,47 +97,49 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             return null;
         }
 
+        let windowContent: preact.ComponentChildren;
         let selectedChoices = getSelectedChoices(this.state.flattened, this.state.selections);
-        let windowContent: preact.ComponentChildren = null;
         let searchQuery = state.search.trim();
+        let renderGroups = buildRenderGroups(
+            state.groups,
+            state.selections,
+            state.type,
+            searchQuery
+        );
 
-        if ("" !== searchQuery)
+
+        // if has search and no matches
+        if ("" !== searchQuery && !renderGroups.length)
         {
-            let filtered = matchSorter(state.flattened, searchQuery, {keys: ["label"]});
-
-            windowContent = filtered.length
-                ? (
-                    <Group
-                        choices={filtered}
-                        selections={state.selections}
-                        onToggle={choice => this.toggleChoice(choice)}
-                    />
-                )
-                : <div class="auslese-message">{props.emptyResultsMessage || "Keine passenden Einträge gefunden."}</div>;
+            windowContent = <div class="auslese-message">{props.emptyResultsMessage || "Keine passenden Einträge gefunden."}</div>;
         }
         else
         {
-            windowContent = [
-                this.state.groups.map(group => (
-                    <Group
-                        choices={group.choices}
-                        headline={group.headline}
-                        selections={this.state.selections}
-                        onToggle={choice => this.toggleChoice(choice)}
-                    />
-                )),
-            ];
+            windowContent = renderGroups.map(group => (
+                <Group
+                    choices={group.choices}
+                    headline={group.headline}
+                    selections={this.state.selections}
+                    onToggle={choice => this.toggleChoice(choice)}
+                    onFocus={choice => this.focusChoice(choice)}
+                    focus={state.focus}
+                />
+            ));
         }
 
-        return <div class={`auslese auslese-${state.type}-select ${state.open && "auslese-open"}`}>
+        return <div
+            class={`auslese auslese-${state.type}-select ${state.open && "auslese-open"}`}
+            onKeyDown={e => this.onKeyDown(e)}
+        >
             <div class="auslese-opener">
                 {"tag" === state.type ? (
                     <CurrentLabels
-                        selectedChoices={selectedChoices}
+                        choices={selectedChoices}
                         placeholder={state.placeholder}
                         search={state.search}
                         onInput={e => this.onInput(e)}
                         onRemove={choice => this.toggleChoice(choice)}
+                        onFocus={() => this.open()}
                     />
                 ) : (
                     <CurrentText
@@ -156,14 +155,15 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                 <div class="auslese-dropdown">
                     {selectedChoices.length > 0 && (
                         <div class="auslese-clear">
-                            <button class="auslese-clear-button"
-                                    onClick={() => this.setState({selections: new WeakMap<AusleseTypes.Choice, boolean>()})}
+                            <button
+                                class="auslese-clear-button"
+                                onClick={() => this.setState({selections: new WeakMap<AusleseTypes.Choice, boolean>()})}
                             >
                                 Auswahl zurücksetzen
                             </button>
                         </div>
                     )}
-                    {state.hasSearch && (
+                    {state.hasSearchForm && (
                         <div class="auslese-search">
                             <label class="auslese-search-widget">
                                 <SearchIcon />
@@ -173,6 +173,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                                     placeholder={state.placeholder}
                                     value={state.search}
                                     onInput={e => this.onInput(e)}
+                                    ref={e => this.inlineSearch = e}
                                 />
                             </label>
                         </div>
@@ -196,8 +197,21 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private open () : void
     {
+        if (this.state.open)
+        {
+            return;
+        }
+
         document.body.addEventListener("click", this.onBodyClickBound, false);
-        this.setState({open: true});
+        this.setState(
+            {open: true},
+            () => {
+                if (this.inlineSearch)
+                {
+                    this.inlineSearch.focus();
+                }
+            }
+        );
     }
 
 
@@ -206,10 +220,16 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private close () : void
     {
+        if (!this.state.open)
+        {
+            return;
+        }
+
         document.body.removeEventListener("click", this.onBodyClickBound, false);
         this.setState({
             open: false,
             search: "",
+            focus: null,
         });
     }
 
@@ -274,5 +294,94 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             search: (event.target as HTMLInputElement).value,
             open: true,
         });
+    }
+
+
+    /**
+     * Focuses the given element
+     */
+    private focusChoice (focus: AusleseTypes.Choice|null) : void
+    {
+        this.setState({focus});
+    }
+
+
+    /**
+     *
+     */
+    private moveChoiceFocus (up: boolean) : void
+    {
+        console.log(buildRenderGroups(
+            this.state.groups,
+            this.state.selections,
+            this.state.type,
+            this.state.search
+        ));
+        let list = focusableList(buildRenderGroups(
+            this.state.groups,
+            this.state.selections,
+            this.state.type,
+            this.state.search
+        ));
+        let first = list[0] || null;
+        this.open();
+
+        if (null === this.state.focus)
+        {
+            return this.focusChoice(up ? null : first);
+        }
+
+        let index = list.indexOf(this.state.focus);
+
+        if (-1 === index)
+        {
+            return this.focusChoice(first);
+        }
+
+        let newIndex = index + (up ? -1 : 1);
+
+        if (newIndex < 0)
+        {
+            this.close();
+        }
+        else if (newIndex < list.length)
+        {
+            return this.focusChoice(list[newIndex]);
+        }
+
+        // do nothing if we are at the end and press down
+    }
+
+
+    /**
+     * Global callback for key down
+     */
+    private onKeyDown (e: KeyboardEvent) : void
+    {
+        let key = e.key.toLowerCase();
+
+        if (" " === key)
+        {
+            if (this.state.focus !== null)
+            {
+                this.moveChoiceFocus(false);
+                this.toggleChoice(this.state.focus);
+                e.preventDefault();
+            }
+
+            return;
+        }
+
+        if ("tab" === key || "escape" === key)
+        {
+            e.preventDefault();
+            return this.close();
+        }
+
+        if ("arrowdown" === key || "arrowup" === key)
+        {
+            e.preventDefault();
+            return this.moveChoiceFocus("arrowup" === key);
+        }
     }
 }

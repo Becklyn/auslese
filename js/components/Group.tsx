@@ -1,7 +1,8 @@
-import {Component, h, render} from "preact";
+import {h} from "preact";
 import {AusleseTypes} from "../@types/auslese";
-import {CheckIcon} from "../lib/icons";
+import {Choice} from "./Choice";
 import JSX = preact.createElement.JSX;
+
 
 
 export interface GroupProps
@@ -10,7 +11,9 @@ export interface GroupProps
     headline?: string|null;
     selections: WeakMap<AusleseTypes.Choice, boolean>;
     onToggle: (choice: AusleseTypes.Choice) => void;
+    onFocus: (choice: AusleseTypes.Choice) => void;
     wrapClass?: string;
+    focus: AusleseTypes.Choice|null;
 
     // selection state:
     // true      -> only selected
@@ -18,6 +21,7 @@ export interface GroupProps
     // undefined -> all
     selectionState?: boolean;
 }
+
 
 
 export function Group (props: GroupProps): JSX.Element|null
@@ -41,21 +45,14 @@ export function Group (props: GroupProps): JSX.Element|null
             )}
             <ul>
                 {choices.map(choice => (
-                    <li class={`auslese-choice ${props.selections.get(choice) ? "auslese-selected" : ""}`}>
-                        <button
-                            type="button"
-                            class="auslese-choice-button"
-                            disabled={choice.disabled}
-                            onClick={!choice.disabled ? (() => props.onToggle(choice)) : undefined}
-                        >
-                            <i class="auslese-check">
-                                {props.selections.get(choice) && (
-                                    <CheckIcon />
-                                )}
-                            </i>
-                            {choice.label}
-                        </button>
-                    </li>
+                    <Choice
+                        label={choice.label}
+                        selected={!!props.selections.get(choice)}
+                        disabled={!!choice.disabled}
+                        focus={props.focus === choice}
+                        onToggle={() => props.onToggle(choice)}
+                        onFocus={() => props.onFocus(choice)}
+                    />
                 ))}
             </ul>
         </div>

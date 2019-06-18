@@ -8,8 +8,7 @@
         width: 100%;
         color: $auslese-choice-text;
 
-        &:hover,
-        &:focus {
+        &.auslese-focus {
             background-color: $auslese-choice-focus-bg;
         }
 
