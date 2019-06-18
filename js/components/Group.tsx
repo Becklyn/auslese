@@ -14,26 +14,13 @@ export interface GroupProps
     onFocus: (choice: AusleseTypes.Choice) => void;
     wrapClass?: string;
     focus: AusleseTypes.Choice|null;
-
-    // selection state:
-    // true      -> only selected
-    // false     -> only unselected
-    // undefined -> all
-    selectionState?: boolean;
 }
 
 
 
 export function Group (props: GroupProps): JSX.Element|null
 {
-    let choices = props.choices;
-
-    if (undefined !== props.selectionState)
-    {
-        choices = choices.filter(c => props.selectionState === !!props.selections.get(c));
-    }
-
-    if (!choices.length)
+    if (!props.choices.length)
     {
         return null;
     }
@@ -44,7 +31,7 @@ export function Group (props: GroupProps): JSX.Element|null
                 <h4 class="auslese-group-title">{props.headline}</h4>
             )}
             <ul>
-                {choices.map(choice => (
+                {props.choices.map(choice => (
                     <Choice
                         label={choice.label}
                         selected={!!props.selections.get(choice)}
