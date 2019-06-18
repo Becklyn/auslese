@@ -7,12 +7,10 @@ import JSX = preact.createElement.JSX;
 
 export interface GroupProps
 {
-    choices: AusleseTypes.Choice[];
-    headline?: string|null;
+    group: AusleseTypes.Group;
     selections: WeakMap<AusleseTypes.Choice, boolean>;
     onToggle: (choice: AusleseTypes.Choice) => void;
     onFocus: (choice: AusleseTypes.Choice) => void;
-    wrapClass?: string;
     focus: AusleseTypes.Choice|null;
 }
 
@@ -20,18 +18,20 @@ export interface GroupProps
 
 export function Group (props: GroupProps): JSX.Element|null
 {
-    if (!props.choices.length)
+    let group = props.group;
+
+    if (!group.choices.length)
     {
         return null;
     }
 
     return (
-        <div class={`auslese-group ${props.wrapClass || ""}`}>
-            {props.headline && (
-                <h4 class="auslese-group-title">{props.headline}</h4>
+        <div class={`auslese-group ${group.header ? "auslese-header-group" : ""}`}>
+            {group.headline && (
+                <h4 class="auslese-group-title">{group.headline}</h4>
             )}
             <ul>
-                {props.choices.map(choice => (
+                {group.choices.map(choice => (
                     <Choice
                         label={choice.label}
                         selected={!!props.selections.get(choice)}

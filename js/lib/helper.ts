@@ -3,13 +3,45 @@ import matchSorter from "match-sorter";
 
 
 /**
+ * Returns whether the select is clearable
+ *
+ * (= whether there is any non-disabled selected option)
+ */
+export function isClearable (
+    choices: AusleseTypes.Choice[],
+    selections: AusleseTypes.Selections
+) : boolean
+{
+    return getSelectedChoices(choices, selections).some(
+        choice => !choice.disabled
+    );
+}
+
+export function getSelectedLabels (
+    choices: AusleseTypes.Choice[],
+    selections: AusleseTypes.Selections
+): string[]
+{
+    return getSelectedChoices(choices, selections).map(choice => choice.label);
+}
+
+
+/**
  * Filters all selected choices from the set of all choices
  */
-export function getSelectedChoices (choices: AusleseTypes.Choice[], selections: AusleseTypes.Selections) : AusleseTypes.Choice[]
+export function getSelectedChoices (
+    choices: AusleseTypes.Choice[],
+    selections: AusleseTypes.Selections,
+    onlyChangeable: boolean = false
+) : AusleseTypes.Choice[]
 {
-    return choices.filter(
+    let result = choices.filter(
     choice => selections.get(choice)
     );
+
+    return onlyChangeable
+        ? result.filter(c => !c.disabled)
+        : result;
 }
 
 /**
@@ -42,7 +74,7 @@ export function buildRenderGroups (
     search: string
 ) : AusleseTypes.Group[]
 {
-    let selected: AusleseTypes.Group = {headline: null, choices: []};
+    let selected: AusleseTypes.Group = {headline: null, choices: [], header: true};
     let result: AusleseTypes.Group[] = [];
 
     if ("" !== search)
@@ -151,23 +183,4 @@ export function sanitizeGroups (unsorted: (AusleseTypes.Choice|AusleseTypes.Grou
     }
 
     return groups;
-}
-
-
-/**
- * Combines all class names in the map to a single class string
- */
-export function classes (map : {[key: string] : boolean}) : string
-{
-    let list: string[] = [];
-
-    for (let key in map)
-    {
-        if (map.hasOwnProperty(key) && map[key])
-        {
-            list.push(key);
-        }
-    }
-
-    return list.join(" ");
 }

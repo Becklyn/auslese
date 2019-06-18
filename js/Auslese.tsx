@@ -1,3 +1,4 @@
+import {extend} from "mojave/extend";
 import {Component, h} from "preact";
 import {AusleseTypes} from "./@types/auslese";
 import {CurrentLabels} from "./components/CurrentLabels";
@@ -8,7 +9,7 @@ import {
     flattenChoices,
     focusableList,
     getSelectedChoices,
-    isChildElement,
+    isChildElement, isClearable,
     sanitizeGroups,
 } from "./lib/helper";
 import {ChevronIcon, LoadingIcon, SearchIcon} from "./lib/icons";
@@ -20,6 +21,7 @@ export interface AusleseProps
     placeholder?: string;
     emptyResultsMessage?: string;
     selections?: WeakMap<AusleseTypes.Choice, boolean>;
+    onChange?: (selection: AusleseTypes.SelectedChoice[]) => void;
 }
 
 
@@ -83,7 +85,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             placeholder: props.placeholder || "Bitte wählen",
             selections: selections,
             loading: false,
-            hasSearchForm: "tag" !== type && flattened.length > 5,
+            hasSearchForm: "tags" !== type && flattened.length > 5,
             focus: null,
         };
     }
@@ -119,8 +121,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         {
             windowContent = renderGroups.map(group => (
                 <Group
-                    choices={group.choices}
-                    headline={group.headline}
+                    group={group}
                     selections={this.state.selections}
                     onToggle={choice => this.toggleChoice(choice)}
                     onFocus={choice => this.focusChoice(choice)}
@@ -134,7 +135,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             onKeyDown={e => this.onKeyDown(e)}
         >
             <div class="auslese-opener">
-                {"tag" === state.type ? (
+                {"tags" === state.type ? (
                     <CurrentLabels
                         choices={selectedChoices}
                         placeholder={state.placeholder}
@@ -155,11 +156,11 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             </div>
             {state.open && (
                 <div class="auslese-dropdown">
-                    {selectedChoices.length > 0 && (
+                    {isClearable(state.flattened, state.selections) && (
                         <div class="auslese-clear">
                             <button
                                 class="auslese-clear-button"
-                                onClick={() => this.setState({selections: new WeakMap<AusleseTypes.Choice, boolean>()})}
+                                onClick={() => this.reset()}
                             >
                                 Auswahl zurücksetzen
                             </button>
@@ -237,25 +238,96 @@ export class Auslese extends Component<AusleseProps, AusleseState>
 
 
     /**
+     *
+     */
+    private reset () : void
+    {
+        this.setState({
+            selections: this.clearSelections(),
+        }, () => this.emitUpdate()
+        );
+    }
+
+
+    /**
+     * Creates a cleared selection element, that only contains the always selected elements
+     */
+    private clearSelections () : WeakMap<AusleseTypes.Choice, boolean>
+    {
+        let selections = new WeakMap<AusleseTypes.Choice, boolean>();
+
+        if ("single" !== this.state.type)
+        {
+            let old = this.state.selections;
+
+            this.state.flattened.forEach(
+                choice =>
+                {
+                    if (old.get(choice) && choice.disabled)
+                    {
+                        selections.set(choice, true);
+                    }
+                }
+            );
+        }
+
+        return selections;
+    }
+
+
+    /**
      * Toggles the given choice
      */
     private toggleChoice (choice: AusleseTypes.Choice) : void
     {
-        this.setState(state => {
-            let selections = state.selections;
+        if (choice.disabled)
+        {
+            return;
+        }
 
-            if ("single" === state.type)
+        this.setState(
+            state =>
             {
-                selections = new WeakMap<AusleseTypes.Choice, boolean>();
-                selections.set(choice, true);
-            }
-            else
-            {
-                selections.set(choice, !selections.get(choice));
-            }
+                let selections = state.selections;
 
-            return {selections};
-        });
+                if ("single" === state.type)
+                {
+                    selections = this.clearSelections();
+                    selections.set(choice, true);
+                }
+                else
+                {
+                    selections.set(choice, !selections.get(choice));
+                }
+
+                return {selections};
+            },
+            () => this.emitUpdate()
+        );
+    }
+
+
+    /**
+     * Emits an update
+     */
+    private emitUpdate ()
+    {
+        if (this.props.onChange)
+        {
+            let update = getSelectedChoices(this.state.flattened, this.state.selections, true).map(
+                choice =>
+                {
+                    return {
+                        choice: choice,
+                        toggle: !choice.disabled
+                            ? () => this.toggleChoice(choice)
+                            : undefined,
+                    };
+                }
+            );
+
+            this.props.onChange(update);
+        }
     }
 
 

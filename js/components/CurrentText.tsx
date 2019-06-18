@@ -1,6 +1,7 @@
+import {classes} from "mojave/classes";
 import {h} from "preact";
 import {AusleseState} from "../Auslese";
-import {classes, getSelectedChoices} from "../lib/helper";
+import {getSelectedChoices} from "../lib/helper";
 import JSX = preact.createElement.JSX;
 
 

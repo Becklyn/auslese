@@ -1,6 +1,6 @@
+import {classes} from "mojave/classes";
 import {h} from "preact";
 import {JSXInternal} from "preact/src/jsx";
-import {classes} from "../lib/helper";
 import {CheckIcon} from "../lib/icons";
 import JSX = preact.h.JSX;
 import EventHandler = JSXInternal.EventHandler;

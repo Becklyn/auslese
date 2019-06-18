@@ -24,7 +24,7 @@
         }
     }
 
-    &.auslese-tag-select,
+    &.auslese-tags-select,
     &.auslese-multiple-select {
         .auslese-check {
             border: 1px solid $auslese-multi-check-border;
@@ -42,7 +42,7 @@
         }
     }
 
-    &.auslese-tag-select {
+    &.auslese-tags-select {
         .auslese-current {
             cursor: text;
             padding-top: 8px;

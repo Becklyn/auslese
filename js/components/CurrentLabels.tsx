@@ -25,9 +25,11 @@ export function CurrentLabels (props: CurrentLabelsProps): JSX.Element
             {props.choices.map(choice => (
                 <span class="auslese-tag">
                     <span class="auslese-tag-label">{choice.label}</span>
-                    <button type="button" class="auslese-tag-delete" onClick={() => props.onRemove(choice)}>
-                        <DeleteIcon />
-                    </button>
+                    {!choice.disabled && (
+                        <button type="button" class="auslese-tag-delete" onClick={() => props.onRemove(choice)}>
+                            <DeleteIcon />
+                        </button>
+                    )}
                 </span>
             ))}
             <input

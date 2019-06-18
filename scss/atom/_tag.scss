@@ -7,7 +7,7 @@
     background-color: $auslese-tag-bg;
     max-width: 100%;
     line-height: 24px;
-    padding-left: 10px;
+    padding: 0 10px;
 
     .auslese-tag-label {
         @include text-overflow;
@@ -21,6 +21,7 @@
         @include center-children;
         margin-left: 3px;
         cursor: pointer;
+        margin-right: -10px;
 
         svg {
             width: 18px;

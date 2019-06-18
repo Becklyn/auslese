@@ -7,9 +7,10 @@
         "dev": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty -w",
         "prepublishOnly": "npm run-script build"
     },
-    "main": "js/Auslese.js",
+    "main": "js/index.js",
     "dependencies": {
         "match-sorter": "^3.1.1",
+        "mojave": "^4.1.0",
         "preact": "^10.0.0-beta.2"
     },
     "devDependencies": {
