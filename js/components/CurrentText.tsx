@@ -6,7 +6,7 @@ import JSX = preact.createElement.JSX;
 
 interface CurrentTextProps
 {
-    onClick: () => void;
+    onClick: EventListener;
     selected: AusleseTypes.Choice[];
     placeholder: string;
 }

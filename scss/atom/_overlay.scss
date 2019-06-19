@@ -1,0 +1,8 @@
+@import "../helper/variables";
+
+.auslese-overlay {
+    position: absolute;
+    display: none;
+    max-width: 60rem;
+    z-index: $auslese-overlay-z;
+}

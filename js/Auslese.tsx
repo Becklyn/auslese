@@ -1,7 +1,8 @@
-import {Component, h} from "preact";
+import {Component, h, render} from "preact";
 import {AusleseTypes} from "./@types/auslese";
 import {CurrentLabels} from "./components/CurrentLabels";
 import {CurrentText} from "./components/CurrentText";
+import {Dropdown} from "./components/Dropdown";
 import {Group} from "./components/Group";
 import {
     buildRenderGroups,
@@ -9,7 +10,7 @@ import {
     isChildElement,
     sanitizeGroups,
 } from "./lib/helper";
-import {ChevronIcon, LoadingIcon, SearchIcon} from "./lib/icons";
+import {ChevronIcon} from "./lib/icons";
 
 
 export interface AusleseProps
@@ -29,7 +30,7 @@ export interface AusleseState
 {
     groups: AusleseTypes.Group[];
     type: AusleseTypes.SelectionType;
-    open: boolean;
+    dropdown: HTMLElement|null;
     search: string;
     selection: WeakMap<AusleseTypes.Choice, boolean>
     loading: boolean;
@@ -40,9 +41,8 @@ export interface AusleseState
 export class Auslese extends Component<AusleseProps, AusleseState>
 {
     private inlineSearch: HTMLElement | undefined;
-
-
     private onBodyClickBound: (event: Event) => void;
+    private dropdownHolder: Element;
 
 
     /**
@@ -51,6 +51,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     public constructor (props: Readonly<AusleseProps>)
     {
         super(props);
+        this.dropdownHolder = document.body;
         this.state = this.initState(props);
         this.onBodyClickBound = event => this.onBodyClick(event);
     }
@@ -73,7 +74,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         return {
             groups: sanitizeGroups(props.choices),
             selection: props.selections || new WeakMap<AusleseTypes.Choice, boolean>(),
-            open: false,
+            dropdown: null,
             search: "",
             type: props.type || "single",
             loading: false,
@@ -104,16 +105,15 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         let hasSearchForm = "tags" !== type && flattenedChoices.length > 5;
 
 
-        let windowContent: preact.ComponentChildren;
+        let dropdownContent: preact.ComponentChildren;
         // if has search and no matches
         if ("" !== searchQuery && !renderGroups.length)
         {
-            windowContent =
-                <div class="auslese-message">{props.emptyResultsMessage || "Keine passenden Einträge gefunden."}</div>;
+            dropdownContent = <div class="auslese-message">{props.emptyResultsMessage || "Keine passenden Einträge gefunden."}</div>;
         }
         else
         {
-            windowContent = renderGroups.map(group => (
+            dropdownContent = renderGroups.map(group => (
                 <Group
                     group={group}
                     selections={selection}
@@ -124,8 +124,31 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             ));
         }
 
+        if (state.dropdown)
+        {
+            render((
+                    <Dropdown
+                        isClearable={isClearable}
+                        resetText={props.resetText || "Auswahl zurücksetzen"}
+                        search={state.search}
+                        placeholder={placeholder}
+                        hasSearchForm={hasSearchForm}
+                        onReset={event => this.reset(event)}
+                        loading={state.loading}
+                        onInput={event => this.onInput(event)}
+                        inputRef={element => this.inlineSearch = element}
+                        outerRef={this.base as HTMLElement}
+                        overlay={state.dropdown}
+                    >
+                        {dropdownContent}
+                    </Dropdown>
+                ),
+                state.dropdown
+            );
+        }
+
         return <div
-            class={`auslese auslese-${type}-select ${state.open ? "auslese-open" : ""} ${props.class || ""}`}
+            class={`auslese auslese-${type}-select ${state.dropdown ? "auslese-open" : ""} ${props.class || ""}`}
             onKeyDown={e => this.onKeyDown(e, renderGroups)}
         >
             <div class="auslese-opener">
@@ -140,7 +163,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     />
                 ) : (
                     <CurrentText
-                        onClick={() => this.toggleOpen()}
+                        onClick={event => this.toggleOpen(event)}
                         placeholder={placeholder}
                         selected={selectedChoices}
                     />
@@ -149,43 +172,6 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     <ChevronIcon/>
                 </button>
             </div>
-            {state.open && (
-                <div class="auslese-dropdown">
-                    {isClearable && (
-                        <div class="auslese-clear">
-                            <button
-                                class="auslese-clear-button"
-                                onClick={() => this.reset()}
-                            >
-                                {props.resetText || "Auswahl zurücksetzen"}
-                            </button>
-                        </div>
-                    )}
-                    {hasSearchForm && (
-                        <div class="auslese-search">
-                            <label class="auslese-search-widget">
-                                <SearchIcon/>
-                                <input
-                                    type="text"
-                                    class="auslese-search-input"
-                                    placeholder={placeholder}
-                                    value={state.search}
-                                    onInput={event => this.onInput(event)}
-                                    ref={element => this.inlineSearch = element}
-                                />
-                            </label>
-                        </div>
-                    )}
-                    <div class="auslese-window">
-                        {windowContent}
-                    </div>
-                    {this.state.loading && (
-                        <div class="auslese-loading">
-                            <LoadingIcon/>
-                        </div>
-                    )}
-                </div>
-            )}
         </div>;
     }
 
@@ -193,16 +179,25 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     /**
      * Opens the dropdown
      */
-    private open (): void
+    private open (event?: Event): void
     {
-        if (this.state.open)
+        if (this.state.dropdown)
         {
             return;
         }
 
+        if (event)
+        {
+            event.stopPropagation();
+        }
+
+        let dropdown = document.createElement("div");
+        dropdown.setAttribute("class", "auslese-overlay");
+        this.dropdownHolder.appendChild(dropdown);
+
         document.body.addEventListener("click", this.onBodyClickBound, false);
         this.setState(
-            {open: true},
+            {dropdown},
             () => {
                 if (this.inlineSearch)
                 {
@@ -218,14 +213,17 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private close (): void
     {
-        if (!this.state.open)
+        if (!this.state.dropdown)
         {
             return;
         }
 
+        render(null, this.state.dropdown);
+        (this.state.dropdown.parentNode as Element).removeChild(this.state.dropdown);
+
         document.body.removeEventListener("click", this.onBodyClickBound, false);
         this.setState({
-            open: false,
+            dropdown: null,
             search: "",
             focus: null,
         });
@@ -235,8 +233,10 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     /**
      *
      */
-    private reset (): void
+    private reset (event: Event): void
     {
+        event.stopPropagation();
+
         this.setState({
                 selection: this.clearSelection(),
             }, () => this.emitUpdate(),
@@ -328,15 +328,15 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     /**
      * Toggles the dropdown
      */
-    private toggleOpen ()
+    private toggleOpen (event?: Event)
     {
-        if (this.state.open)
+        if (this.state.dropdown)
         {
             this.close();
         }
         else
         {
-            this.open();
+            this.open(event);
         }
     }
 
@@ -346,7 +346,10 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private onBodyClick (event: Event): void
     {
-        if (!isChildElement(this.base as Element, event.target as Element))
+        let base = this.base as Element;
+        let target = event.target as Element;
+
+        if (!isChildElement(base, target) && !isChildElement(this.dropdownHolder, target))
         {
             this.close();
         }
@@ -360,8 +363,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     {
         this.setState({
             search: (event.target as HTMLInputElement).value,
-            open: true,
-        });
+        }, () => this.open());
     }
 
 
