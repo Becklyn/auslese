@@ -18,6 +18,7 @@ export interface AusleseProps
     type?: AusleseTypes.SelectionType;
     selections?: WeakMap<AusleseTypes.Choice, boolean>;
     onChange?: (selection: AusleseTypes.SelectedChoice[]) => void;
+    class?: string|null;
     placeholder?: string;
     emptyResultsMessage?: string;
     resetText?: string;
@@ -124,7 +125,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         }
 
         return <div
-            class={`auslese auslese-${type}-select ${state.open && "auslese-open"}`}
+            class={`auslese auslese-${type}-select ${state.open ? "auslese-open" : ""} ${props.class || ""}`}
             onKeyDown={e => this.onKeyDown(e, renderGroups)}
         >
             <div class="auslese-opener">

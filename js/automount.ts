@@ -1,4 +1,3 @@
-import {after, createUnstyledElement} from "mojave/dom/manipulate";
 import {children} from "mojave/dom/traverse";
 import {render, createElement} from "preact";
 import {AusleseTypes} from "./@types/auslese";
@@ -34,6 +33,7 @@ function parseSelect (select: HTMLSelectElement) : ParseSelectResult
     return {
         mapping: mapping,
         props: {
+            class: select.getAttribute("class"),
             choices: choices,
             selections: selections,
             type: select.multiple
@@ -110,20 +110,16 @@ export function mountAuslese (selector: string, context?: Document|Element)
                 return;
             }
 
-            let wrapper = createUnstyledElement("div", {
-                class: "auslese-wrapper",
-            });
-            after(select, wrapper);
-
             let data = parseSelect(select);
             data.props.onChange = selection => updateSelectState(select, data.mapping, selection);
 
             render(
                 createElement(Auslese, data.props),
-                wrapper
+                select.parentElement as Element
             );
 
-            select.classList.add("auslese-bound-select");
+            // replace all existing classes
+            select.setAttribute("class", "auslese-bound-select");
         }
     );
 }
