@@ -122,6 +122,8 @@ export function mountAuslese (selector: string, context?: Document|Element)
                 createElement(Auslese, data.props),
                 wrapper
             );
+
+            select.classList.add("auslese-bound-select");
         }
     );
 }
