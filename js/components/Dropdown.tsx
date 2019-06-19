@@ -1,5 +1,5 @@
 import {Component, h} from "preact";
-import {attachDropdown, AttachRemove} from "../lib/attach-dropdown";
+import {AttachDirector, attachDropdown} from "../lib/attach-dropdown";
 import {LoadingIcon, SearchIcon} from "../lib/icons";
 
 
@@ -25,7 +25,8 @@ export interface DropdownState
 
 export class Dropdown extends Component<DropdownProps, DropdownState>
 {
-    private attachyDisable: AttachRemove|undefined;
+    private attachment: AttachDirector|undefined;
+    private needsUpdate: boolean = false;
 
 
     /**
@@ -33,7 +34,7 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
      */
     public componentDidMount (): void
     {
-        this.attachyDisable = attachDropdown(this.props.outerRef, this.props.overlay);
+        this.attachment = attachDropdown(this.props.outerRef, this.props.overlay);
     }
 
 
@@ -42,9 +43,59 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
      */
     public componentWillUnmount (): void
     {
-        if (this.attachyDisable)
+        if (this.attachment)
         {
-            this.attachyDisable();
+            this.attachment.remove();
+        }
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    public componentWillUpdate (nextProps: Readonly<DropdownProps>): void
+    {
+        this.needsUpdate = this.needsAttachmentUpdate(nextProps);
+    }
+
+
+    /**
+     * Returns whether the attachment needs an update
+     * @param nextProps
+     */
+    private needsAttachmentUpdate (nextProps: Readonly<DropdownProps>) : boolean
+    {
+        let propsThatMightChangeTheHeight = [
+            "isClearable",
+            "resetText",
+            "hasSearchForm",
+            "loading",
+        ];
+
+        for (let i = 0; i < propsThatMightChangeTheHeight.length; i++)
+        {
+            let prop = propsThatMightChangeTheHeight[i];
+            if (nextProps[prop] !== this.props[prop])
+            {
+                return true;
+            }
+        }
+
+        // check only for the number of elements
+        return (Array.isArray(this.props.children) && Array.isArray(nextProps.children) && this.props.children.length !== nextProps.children.length);
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    public componentDidUpdate (): void
+    {
+        // update after rendering, as the dimensions might have changed
+        if (this.attachment && this.needsUpdate)
+        {
+            this.attachment.update();
+            this.needsUpdate = false;
         }
     }
 

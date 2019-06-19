@@ -2,7 +2,11 @@ import {off, on} from "mojave/dom/events";
 import {getScrollParent} from "mojave/scroll";
 import {onNextAnimationFrame} from "mojave/timing";
 
-export type AttachRemove = () => void;
+export interface AttachDirector {
+    remove: () => void;
+    update: () => void;
+}
+
 // the number of pixels that the element must be from the border
 const INTERSECTION = 20;
 const DISTANCE = 10;
@@ -65,7 +69,7 @@ function update (element: Element, overlay: HTMLElement, scrollable: Element) : 
 /**
  * Attaches the overlay to the element
  */
-export function attachDropdown (element: HTMLElement, overlay: HTMLElement) : AttachRemove
+export function attachDropdown (element: HTMLElement, overlay: HTMLElement) : AttachDirector
 {
     let scrollParent = getScrollParent(element.parentNode);
     let scrollableListener = scrollParent || window;
@@ -81,12 +85,15 @@ export function attachDropdown (element: HTMLElement, overlay: HTMLElement) : At
     on(window, "resize", onUpdate);
 
     // return disable handler
-    return () =>
-    {
-        off(scrollableListener, "scroll", onUpdate);
-        off(window, "resize", onUpdate);
-        overlay.style.minWidth = "";
-        overlay.style.maxWidth = "";
-        overlay.style.maxHeight = "";
+    return {
+        remove: () =>
+        {
+            off(scrollableListener, "scroll", onUpdate);
+            off(window, "resize", onUpdate);
+            overlay.style.minWidth = "";
+            overlay.style.maxWidth = "";
+            overlay.style.maxHeight = "";
+        },
+        update: onUpdate,
     };
 }

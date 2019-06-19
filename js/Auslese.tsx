@@ -346,10 +346,15 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private onBodyClick (event: Event): void
     {
+        if (!this.state.dropdown)
+        {
+            return;
+        }
+
         let base = this.base as Element;
         let target = event.target as Element;
 
-        if (!isChildElement(base, target) && !isChildElement(this.dropdownHolder, target))
+        if (!isChildElement(base, target) && !isChildElement(this.state.dropdown, target))
         {
             this.close();
         }
