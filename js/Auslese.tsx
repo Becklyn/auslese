@@ -344,9 +344,9 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     /**
      * Callback on when the body was clicked
      */
-    private onBodyClick (event)
+    private onBodyClick (event: Event): void
     {
-        if (!isChildElement(this.base as Element, event.target))
+        if (!isChildElement(this.base as Element, event.target as Element))
         {
             this.close();
         }
@@ -356,7 +356,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     /**
      * Handler for when the input changes
      */
-    private onInput (event)
+    private onInput (event: Event): void
     {
         this.setState({
             search: (event.target as HTMLInputElement).value,
