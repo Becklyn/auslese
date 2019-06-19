@@ -1,22 +1,22 @@
 import {classes} from "mojave/classes";
 import {h} from "preact";
-import {AusleseState} from "../Auslese";
-import {getSelectedChoices} from "../lib/helper";
+import {AusleseTypes} from "../@types/auslese";
 import JSX = preact.createElement.JSX;
 
 
 interface CurrentTextProps
 {
     onClick: () => void;
-    data: AusleseState;
+    selected: AusleseTypes.Choice[];
+    placeholder: string;
 }
 
 export function CurrentText (props: CurrentTextProps): JSX.Element
 {
-    let selection = getSelectedChoices(props.data.flattened, props.data.selections);
+    let selection = props.selected;
     let text = selection.length
         ? selection.map(s => s.label).join(", ")
-        : props.data.placeholder;
+        : props.placeholder;
 
     return (
         <div

@@ -1,49 +1,6 @@
 import {AusleseTypes} from "../@types/auslese";
 import matchSorter from "match-sorter";
 
-
-/**
- * Returns whether the select is clearable
- *
- * (= whether there is any non-disabled selected option)
- */
-export function isClearable (
-    choices: AusleseTypes.Choice[],
-    selections: AusleseTypes.Selections
-) : boolean
-{
-    return getSelectedChoices(choices, selections).some(
-        choice => !choice.disabled
-    );
-}
-
-export function getSelectedLabels (
-    choices: AusleseTypes.Choice[],
-    selections: AusleseTypes.Selections
-): string[]
-{
-    return getSelectedChoices(choices, selections).map(choice => choice.label);
-}
-
-
-/**
- * Filters all selected choices from the set of all choices
- */
-export function getSelectedChoices (
-    choices: AusleseTypes.Choice[],
-    selections: AusleseTypes.Selections,
-    onlyChangeable: boolean = false
-) : AusleseTypes.Choice[]
-{
-    let result = choices.filter(
-    choice => selections.get(choice)
-    );
-
-    return onlyChangeable
-        ? result.filter(c => !c.disabled)
-        : result;
-}
-
 /**
  * Returns whether the node is a child element from the parent (includes being the node itself).
  */
@@ -94,14 +51,11 @@ export function buildRenderGroups (
             group.choices.forEach(
                 choice =>
                 {
-                    if (selections.get(choice) && "multiple" === type)
-                    {
-                        selected.choices.push(choice);
-                    }
-                    else
-                    {
-                        transformed.choices.push(choice);
-                    }
+                    let list = (selections.get(choice) && "multiple" === type)
+                        ? selected
+                        : transformed;
+
+                    list.choices.push(choice);
                 }
             );
 
@@ -118,16 +72,6 @@ export function buildRenderGroups (
     }
 
     return result;
-}
-
-/**
- * Returns the focusable list
- */
-export function focusableList (groups: AusleseTypes.Group[]) : AusleseTypes.Choice[]
-{
-    return flattenChoices(groups).filter(
-        c => !c.disabled
-    );
 }
 
 
@@ -161,10 +105,10 @@ export function sanitizeGroups (unsorted: (AusleseTypes.Choice|AusleseTypes.Grou
                 if (lastGroup !== null)
                 {
                     groups.push(lastGroup);
+                    lastGroup = null;
                 }
 
                 groups.push(entry as AusleseTypes.Group);
-                lastGroup = null;
                 return;
             }
 
