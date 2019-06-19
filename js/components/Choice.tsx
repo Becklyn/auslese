@@ -1,7 +1,7 @@
 import {classes} from "mojave/classes";
 import {h} from "preact";
 import {JSXInternal} from "preact/src/jsx";
-import {CheckIcon} from "../lib/icons";
+import {Icon} from "../lib/icons";
 import JSX = preact.h.JSX;
 import EventHandler = JSXInternal.EventHandler;
 
@@ -52,7 +52,7 @@ export function Choice (props: ChoiceProps): JSX.Element
             >
                 <i class="auslese-check">
                     {props.selected && (
-                        <CheckIcon/>
+                        <Icon name="check" />
                     )}
                 </i>
                 {props.label}

@@ -1,6 +1,6 @@
 import {h} from "preact";
 import {AusleseTypes} from "../@types/auslese";
-import {DeleteIcon} from "../lib/icons";
+import {Icon} from "../lib/icons";
 import JSX = preact.createElement.JSX;
 
 let renderIndex = 0;
@@ -27,7 +27,7 @@ export function CurrentLabels (props: CurrentLabelsProps): JSX.Element
                     <span class="auslese-tag-label">{choice.label}</span>
                     {!choice.disabled && (
                         <button type="button" class="auslese-tag-delete" onClick={() => props.onRemove(choice)}>
-                            <DeleteIcon />
+                            <Icon name="delete" />
                         </button>
                     )}
                 </span>
