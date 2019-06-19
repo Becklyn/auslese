@@ -5,16 +5,18 @@ import Terser from "terser";
 
 // mapping of files to limit
 let files = {
-    'index.js': 80,
-    'Auslese.js': 220,
-    'automount.js': 100,
-    'lib/helper.js': 250,
-    'lib/icons.js': 300,
-    'components/Choice.js': 300,
-    'components/CurrentLabels.js': 300,
-    'components/CurrentText.js': 300,
-    'components/Group.js': 300,
+    'index.js': 75,
+    'Auslese.js': 4500,
+    'automount.js': 1050,
+    'lib/helper.js': 850,
+    'lib/icons.js': 1400,
+    'components/Choice.js': 450,
+    'components/CurrentLabels.js': 550,
+    'components/CurrentText.js': 250,
+    'components/Group.js': 450,
 };
+
+
 
 Object.keys(files).forEach(fileName => {
     let sizeLimit = files[fileName];
