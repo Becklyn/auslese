@@ -23,7 +23,10 @@ function parseSelect (select: HTMLSelectElement) : ParseSelectResult
         element =>
         {
             return (element instanceof HTMLOptGroupElement)
-                ? parseOptGroup(element, selections, mapping)
+                ? {
+                    headline: element.label,
+                    choices: children<HTMLOptionElement>(element).map(option => parseOption(option, selections, mapping)),
+                }
                 : parseOption(element, selections, mapping);
         }
     );
@@ -37,22 +40,6 @@ function parseSelect (select: HTMLSelectElement) : ParseSelectResult
                 ? ("tags" === select.dataset.auslese ? "tags" : "multiple")
                 : "single",
         },
-    };
-}
-
-
-/**
- * Parses an <optgroup> with children
- */
-function parseOptGroup (
-    optgroup: HTMLOptGroupElement,
-    selections: WeakMap<AusleseTypes.Choice, boolean>,
-    mapping: WeakMap<AusleseTypes.Choice, HTMLOptionElement>
-) : AusleseTypes.Group
-{
-    return {
-        headline: optgroup.label,
-        choices: children<HTMLOptionElement>(optgroup).map(option => parseOption(option, selections, mapping)),
     };
 }
 
