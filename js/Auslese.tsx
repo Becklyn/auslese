@@ -9,7 +9,7 @@ import {
     isChildElement,
     sanitizeGroups,
 } from "./lib/helper";
-import {Icon} from "./lib/icons";
+import {ChevronIcon, LoadingIcon, SearchIcon} from "./lib/icons";
 
 
 export interface AusleseProps
@@ -145,7 +145,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     />
                 )}
                 <button type="button" class="auslese-current-chevron" onClick={() => this.toggleOpen()}>
-                    <Icon name="chevron" />
+                    <ChevronIcon/>
                 </button>
             </div>
             {state.open && (
@@ -163,7 +163,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     {hasSearchForm && (
                         <div class="auslese-search">
                             <label class="auslese-search-widget">
-                                <Icon name="search" />
+                                <SearchIcon/>
                                 <input
                                     type="text"
                                     class="auslese-search-input"
@@ -180,7 +180,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     </div>
                     {this.state.loading && (
                         <div class="auslese-loading">
-                            <Icon name="loading" />
+                            <LoadingIcon/>
                         </div>
                     )}
                 </div>
