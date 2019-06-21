@@ -14,6 +14,8 @@
     }
 }
 
-.auslese-check-multiple {
-    border: 1px solid $auslese-multi-check-border;
+@if $auslese-multi-check-border != 0 {
+    .auslese-check-multiple {
+        border: $auslese-multi-check-border;
+    }
 }

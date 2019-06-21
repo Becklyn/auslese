@@ -1,12 +1,25 @@
 @import "../helper/variables";
 
 .auslese {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    border: 1px solid $auslese-border-color;
+    line-height: 1;
+    background-color: $auslese-bg;
+
     .auslese-clear + .auslese-search {
         padding-top: 10px;
     }
 
     &.auslese-tags-select .auslese-current-chevron {
         border-left: 1px solid $auslese-border-color;
+    }
+
+    &.auslese-open {
+        .auslese-current-chevron svg {
+            transform: rotateZ(180deg);
+        }
     }
 
     svg {

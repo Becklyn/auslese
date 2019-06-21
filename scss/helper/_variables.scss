@@ -1,47 +1,51 @@
 ///
 /// Global
 ///
+$auslese-text: #000 !default;
 $auslese-bg: #fff !default;
-$auslese-border-color: #9f9f9f !default;
+$auslese-muted: #9f9f9f !default;
+$auslese-border-color: $auslese-muted !default;
 $auslese-shadow-color: rgba(#000, .13) !default;
 $auslese-dropdown-shadow: 0 2px 8px $auslese-shadow-color !default;
 $auslese-overlay-z: 250 !default;
+$auslese-focus: #f2f2f2 !default;
 
 ///
 /// Current
 ///
-$auslese-current: #000 !default;
-$auslese-current-placeholder: #9f9f9f !default;
+$auslese-current: $auslese-text !default;
+$auslese-current-placeholder: $auslese-muted !default;
 
 ///
 /// Groups
 ///
-$auslese-group-title: #9f9f9f !default;
+$auslese-group-title: $auslese-muted !default;
 
 ///
 /// Choice
 ///
-$auslese-choice-text: #000 !default;
-$auslese-choice-focus-bg: #f2f2f2 !default;
-$auslese-choice-disabled: #9f9f9f !default;
+$auslese-choice-text: $auslese-text !default;
+$auslese-choice-focus-bg: $auslese-focus !default;
+$auslese-choice-disabled: $auslese-muted !default;
 
 ///
 /// Multi
 ///
-$auslese-multi-check-border: #dedede !default;
+$auslese-multi-check-border-color: #dedede !default;
+$auslese-multi-check-border: 1px solid $auslese-multi-check-border-color !default;
 $auslese-multi-check-selected: #fff !default;
-$auslese-multi-check-selected-bg: #000 !default;
+$auslese-multi-check-selected-bg: $auslese-text !default;
 
 ///
 /// Search
 ///
-$auslese-search: #000 !default;
-$auslese-search-placeholder: #9f9f9f !default;
+$auslese-search: $auslese-text !default;
+$auslese-search-placeholder: $auslese-muted !default;
 $auslese-search-border: #e6e6e6 !default;
 
 ///
 /// Tags
 ///
-$auslese-tag-bg: #f2f2f2 !default;
-$auslese-tag-focus: #fff !default;
-$auslese-tag-focus-bg: #000 !default;
+$auslese-tag-bg: $auslese-focus !default;
+$auslese-tag-focus: $auslese-bg !default;
+$auslese-tag-focus-bg: $auslese-text !default;
