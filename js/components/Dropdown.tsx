@@ -70,6 +70,7 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
             "resetText",
             "hasSearchForm",
             "loading",
+            "search",
         ];
 
         for (let i = 0; i < propsThatMightChangeTheHeight.length; i++)
