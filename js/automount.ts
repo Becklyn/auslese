@@ -18,7 +18,17 @@ function parseSelect (select: HTMLSelectElement) : ParseSelectResult
 {
     let selections = new WeakMap<AusleseTypes.Choice, boolean>();
     let mapping = new WeakMap<AusleseTypes.Choice, HTMLOptionElement>();
-    let choices: (AusleseTypes.Choice|AusleseTypes.Group)[] = children<HTMLOptionElement|HTMLOptGroupElement>(select).map(
+    let selectChildren = children<HTMLOptionElement|HTMLOptGroupElement>(select);
+    let firstChild = selectChildren[0];
+    let placeholder = select.dataset.placeholder;
+
+    if (firstChild instanceof HTMLOptionElement && "" === firstChild.value)
+    {
+        placeholder = firstChild.textContent || "";
+        selectChildren.shift();
+    }
+
+    let choices: (AusleseTypes.Choice|AusleseTypes.Group)[] = selectChildren.map(
         element =>
         {
             return (element instanceof HTMLOptGroupElement)
@@ -36,6 +46,7 @@ function parseSelect (select: HTMLSelectElement) : ParseSelectResult
             class: select.getAttribute("class"),
             choices: choices,
             selections: selections,
+            placeholder: placeholder,
             type: select.multiple
                 ? ("tags" === select.dataset.auslese ? "tags" : "multiple")
                 : "single",
