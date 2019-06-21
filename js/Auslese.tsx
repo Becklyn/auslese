@@ -1,3 +1,4 @@
+import {trigger} from "mojave/dom/events";
 import {Component, h, render} from "preact";
 import {AusleseTypes} from "./@types/auslese";
 import {CurrentLabels} from "./components/CurrentLabels";
@@ -40,9 +41,9 @@ export interface AusleseState
 
 export class Auslese extends Component<AusleseProps, AusleseState>
 {
-    private inlineSearch: HTMLElement | undefined;
     private onBodyClickBound: (event: Event) => void;
     private dropdownHolder: Element;
+    private labelInput: HTMLInputElement|undefined;
 
 
     /**
@@ -86,6 +87,18 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     /**
      * @inheritDoc
      */
+    public componentDidUpdate (): void
+    {
+        if (this.labelInput && this.state.dropdown)
+        {
+            this.labelInput.focus();
+        }
+    }
+
+
+    /**
+     * @inheritDoc
+     */
     public render (props: AusleseProps, state: AusleseState): preact.ComponentChild
     {
         let {groups, selection, type} = state;
@@ -120,7 +133,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     group={group}
                     selections={selection}
                     onToggle={choice => this.toggleChoice(choice)}
-                    onFocus={choice => this.focusChoice(choice)}
+                    onMouseEnter={choice => this.focusChoice(choice, false)}
                     focus={state.focus}
                     multiple={"single" !== type}
                 />
@@ -139,9 +152,9 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                         onReset={event => this.reset(event)}
                         loading={state.loading}
                         onInput={event => this.onInput(event)}
-                        inputRef={element => this.inlineSearch = element}
                         outerRef={this.base as HTMLElement}
                         overlay={state.dropdown}
+                        onKeyDown={event => this.onKeyDown(event, renderGroups)}
                     >
                         {dropdownContent}
                     </Dropdown>
@@ -162,6 +175,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     onInput={event => this.onInput(event)}
                     onRemove={choice => this.toggleChoice(choice)}
                     onFocus={() => this.open()}
+                    inputRef={element => this.labelInput = element}
                 />
             ) : (
                 <CurrentText
@@ -170,7 +184,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     selected={selectedChoices}
                 />
             )}
-            <button type="button" class="auslese-current-chevron" onClick={() => this.toggleOpen()}>
+            <button type="button" class="auslese-current-chevron" onClick={event => this.toggleOpen(event)}>
                 <ChevronIcon/>
             </button>
         </div>;
@@ -197,15 +211,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         this.dropdownHolder.appendChild(dropdown);
 
         document.body.addEventListener("click", this.onBodyClickBound, false);
-        this.setState(
-            {dropdown},
-            () => {
-                if (this.inlineSearch)
-                {
-                    this.inlineSearch.focus();
-                }
-            },
-        );
+        this.setState({dropdown});
     }
 
 
@@ -344,6 +350,12 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private toggleOpen (event?: Event)
     {
+        if (event)
+        {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+
         if (this.state.dropdown)
         {
             this.close();
@@ -389,9 +401,14 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     /**
      * Focuses the given element
      */
-    private focusChoice (focus: AusleseTypes.Choice | null): void
+    private focusChoice (focus: AusleseTypes.Choice | null, scrollTo: boolean = false): void
     {
-        this.setState({focus});
+        this.setState({focus}, () => {
+            if (scrollTo && this.state.dropdown)
+            {
+                trigger(this.state.dropdown, "auslese:scroll-to-focus");
+            }
+        });
     }
 
 
@@ -406,14 +423,14 @@ export class Auslese extends Component<AusleseProps, AusleseState>
 
         if (null === this.state.focus)
         {
-            return this.focusChoice(up ? null : first);
+            return this.focusChoice(first, true);
         }
 
         let index = list.indexOf(this.state.focus);
 
         if (-1 === index)
         {
-            return this.focusChoice(first);
+            return this.focusChoice(first, true);
         }
 
         let newIndex = index + (up ? -1 : 1);
@@ -424,7 +441,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         }
         else if (newIndex < list.length)
         {
-            return this.focusChoice(list[newIndex]);
+            return this.focusChoice(list[newIndex], true);
         }
 
         // do nothing if we are at the end and press down
@@ -436,7 +453,6 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private onKeyDown (event: KeyboardEvent, renderGroups: AusleseTypes.Group[]): void
     {
-        let handled = false;
         let key = event.key.toLowerCase();
 
         switch (key)
@@ -444,32 +460,28 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             case " ":
                 if (this.state.focus !== null)
                 {
+                    this.toggleChoice(this.state.focus);
+
                     // we need to move the focus, as the element will disappear
                     if ("multiple" === this.state.type)
                     {
                         this.moveChoiceFocus(renderGroups, false);
                     }
-                    this.toggleChoice(this.state.focus);
-                    handled = true;
+
+                    event.preventDefault();
                 }
                 break;
 
             case "tab":
             case "escape":
                 this.close();
-                handled = true;
                 break;
 
             case "arrowdown":
             case "arrowup":
                 this.moveChoiceFocus(renderGroups, "arrowup" === key);
-                handled = true;
+                event.preventDefault();
                 break;
-        }
-
-        if (handled)
-        {
-            event.preventDefault();
         }
     }
 

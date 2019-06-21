@@ -1,3 +1,5 @@
+import {on} from "mojave/dom/events";
+import {findOne} from "mojave/dom/traverse";
 import {Component, h} from "preact";
 import {AttachDirector, attachDropdown} from "../lib/attach-dropdown";
 import {LoadingIcon, SearchIcon} from "../lib/icons";
@@ -12,11 +14,11 @@ export interface DropdownProps
     hasSearchForm: boolean;
     onReset: EventListener;
     loading: boolean;
-    onInput: (event: Event) => void;
-    inputRef: (element: HTMLElement) => void;
+    onInput: EventListener;
     outerRef: HTMLElement;
     children: preact.ComponentChildren;
     overlay: HTMLElement;
+    onKeyDown: (event: KeyboardEvent) => void;
 }
 
 export interface DropdownState
@@ -27,6 +29,8 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
 {
     private attachment: AttachDirector|undefined;
     private needsUpdate: boolean = false;
+    private window: HTMLElement|undefined;
+    private input: HTMLInputElement|undefined;
 
 
     /**
@@ -35,6 +39,13 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
     public componentDidMount (): void
     {
         this.attachment = attachDropdown(this.props.outerRef, this.props.overlay);
+        on((this.base as HTMLElement).parentElement, "auslese:scroll-to-focus", () => this.scrollToFocus());
+
+        // apparently we need to do it in the next task
+        window.setTimeout(
+            () => this.input && this.input.focus(),
+            50
+        );
     }
 
 
@@ -60,16 +71,32 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
 
 
     /**
+     * @inheritDoc
+     */
+    public componentDidUpdate (): void
+    {
+        // update after rendering, as the dimensions might have changed
+        if (this.attachment && this.needsUpdate)
+        {
+            this.attachment.update();
+            this.needsUpdate = false;
+        }
+
+        (this.input as HTMLInputElement).focus()
+    }
+
+
+    /**
      * Returns whether the attachment needs an update
      * @param nextProps
      */
     private needsAttachmentUpdate (nextProps: Readonly<DropdownProps>) : boolean
     {
         let propsThatMightChangeTheHeight = [
-            "isClearable",
-            "resetText",
             "hasSearchForm",
+            "isClearable",
             "loading",
+            "resetText",
             "search",
         ];
 
@@ -90,24 +117,10 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
     /**
      * @inheritDoc
      */
-    public componentDidUpdate (): void
-    {
-        // update after rendering, as the dimensions might have changed
-        if (this.attachment && this.needsUpdate)
-        {
-            this.attachment.update();
-            this.needsUpdate = false;
-        }
-    }
-
-
-    /**
-     * @inheritDoc
-     */
     public render (props: DropdownProps, state: DropdownState): preact.ComponentChild
     {
         return (
-            <div class="auslese-dropdown">
+            <div class="auslese-dropdown" onKeyDown={props.onKeyDown}>
                 {props.isClearable && (
                     <div class="auslese-clear">
                         <button
@@ -128,12 +141,12 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
                                 placeholder={props.placeholder}
                                 value={props.search}
                                 onInput={props.onInput}
-                                ref={props.inputRef}
+                                ref={element => this.input = element}
                             />
                         </label>
                     </div>
                 )}
-                <div class="auslese-window">
+                <div class="auslese-window" ref={element => this.window = element}>
                     {props.children}
                 </div>
                 {props.loading && (
@@ -143,5 +156,37 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
                 )}
             </div>
         );
+    }
+
+
+    /**
+     * Scrolls to the focused element
+     */
+    private scrollToFocus () : void
+    {
+        let focused = findOne(".auslese-focus", this.base as HTMLElement);
+
+        if (!focused || !this.window)
+        {
+            return;
+        }
+
+        let windowBox = this.window.getBoundingClientRect();
+        let windowScroll = this.window.scrollTop;
+        let focusedBox = focused.getBoundingClientRect();
+        let topOffset = focusedBox.top + windowScroll - windowBox.top;
+
+        if (topOffset < windowScroll)
+        {
+            this.window.scrollTop = topOffset - 10;
+            return;
+        }
+
+        let bottomOffset = windowScroll + focusedBox.bottom - windowBox.top;
+
+        if (bottomOffset > (windowScroll + windowBox.height))
+        {
+            this.window.scrollTop = bottomOffset - windowBox.height + 10;
+        }
     }
 }

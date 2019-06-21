@@ -11,7 +11,7 @@ export interface GroupProps
     group: AusleseTypes.Group;
     selections: WeakMap<AusleseTypes.Choice, boolean>;
     onToggle: (choice: AusleseTypes.Choice) => void;
-    onFocus: (choice: AusleseTypes.Choice) => void;
+    onMouseEnter: (choice: AusleseTypes.Choice) => void;
     focus: AusleseTypes.Choice|null;
     multiple: boolean;
 }
@@ -45,7 +45,7 @@ export function Group (props: GroupProps): JSX.Element|null
                         disabled={!!choice.disabled}
                         focus={props.focus === choice}
                         onToggle={() => props.onToggle(choice)}
-                        onFocus={() => props.onFocus(choice)}
+                        onMouseEnter={() => props.onMouseEnter(choice)}
                         multiple={props.multiple}
                     />
                 ))}

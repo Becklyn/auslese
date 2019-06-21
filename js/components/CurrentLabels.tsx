@@ -13,6 +13,7 @@ export interface CurrentLabelsProps
     onInput: (e: Event) => void;
     onRemove: (choice: AusleseTypes.Choice) => void;
     onFocus: () => void;
+    inputRef: (element: HTMLInputElement) => void;
 }
 
 
@@ -40,6 +41,7 @@ export function CurrentLabels (props: CurrentLabelsProps): JSX.Element
                 placeholder={props.placeholder}
                 id={randomId}
                 onFocus={props.onFocus}
+                ref={props.inputRef}
             />
         </label>
     );

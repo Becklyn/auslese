@@ -13,7 +13,7 @@ export interface ChoiceProps
     disabled: boolean;
     focus: boolean;
     onToggle: () => void;
-    onFocus: () => void;
+    onMouseEnter: () => void;
     multiple: boolean;
 }
 
@@ -22,7 +22,7 @@ export interface ChoiceProps
 export function Choice (props: ChoiceProps): JSX.Element
 {
     let onToggle: EventHandler<Event>|undefined;
-    let onFocus: EventHandler<Event>|undefined;
+    let onMouseEnter: EventHandler<Event>|undefined;
 
     if (!props.disabled)
     {
@@ -32,10 +32,10 @@ export function Choice (props: ChoiceProps): JSX.Element
             props.onToggle();
         };
 
-        onFocus = (event: Event) =>
+        onMouseEnter = (event: Event) =>
         {
             event.stopPropagation();
-            props.onFocus();
+            props.onMouseEnter();
         };
     }
 
@@ -49,7 +49,7 @@ export function Choice (props: ChoiceProps): JSX.Element
                 })}
                 disabled={props.disabled}
                 onClick={onToggle}
-                onMouseEnter={onFocus}
+                onMouseEnter={onMouseEnter}
             >
                 <i class={`auslese-check ${props.multiple ? "auslese-check-multiple" : "auslese-check-single"}`}>
                     {props.selected && (
