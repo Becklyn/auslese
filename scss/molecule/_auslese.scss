@@ -1,22 +1,12 @@
 @import "../helper/variables";
 
 .auslese {
-
     .auslese-clear + .auslese-search {
         padding-top: 10px;
     }
 
-    &.auslese-tags-select {
-        .auslese-current {
-            cursor: text;
-            padding-top: 8px;
-            padding-bottom: 8px;
-        }
-
-        .auslese-current-chevron,
-        .auslese-current-clear {
-            border-left: 1px solid $auslese-border-color;
-        }
+    &.auslese-tags-select .auslese-current-chevron {
+        border-left: 1px solid $auslese-border-color;
     }
 
     svg {

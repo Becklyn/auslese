@@ -1,23 +1,13 @@
 @import "../helper/variables";
 
-
-.auslese-opener {
-    display: flex;
-    align-items: stretch;
-    width: 100%;
-    border: 1px solid $auslese-border-color;
-    line-height: 1;
-    background-color: $auslese-bg;
-
-    svg {
-        @include transition(transform);
-    }
-}
-
 .auslese-current {
     @include flex-fill-width;
     padding: 12px 20px;
     color: $auslese-current;
+
+    svg {
+        @include transition(transform);
+    }
 
     &.auslese-placeholder {
         color: $auslese-current-placeholder;
@@ -38,5 +28,25 @@
     &:hover {
         background-color: $auslese-tag-focus-bg;
         color: $auslese-tag-focus;
+    }
+}
+
+.auslese-current-tags {
+    display: flex;
+    flex-wrap: wrap;
+    margin: -2px -5px;
+    cursor: text;
+    padding-top: 8px;
+    padding-bottom: 8px;
+
+    .auslese-tags-input {
+        flex-grow: 1;
+        flex-shrink: 1;
+        min-width: 60px;
+        border: 0;
+    }
+
+    > * {
+        margin: 2px 5px;
     }
 }

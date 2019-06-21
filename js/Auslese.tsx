@@ -102,7 +102,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         let renderGroups = buildRenderGroups(groups, selection, type, searchQuery);
         let placeholder = props.placeholder || "Bitte wählen";
         let isClearable = selectedChoices.some(choice => !choice.disabled);
-        let hasSearchForm = "tags" !== type && flattenedChoices.length > 40;
+        let hasSearchForm = "tags" !== type && flattenedChoices.length > 5;
 
 
         let dropdownContent: preact.ComponentChildren;

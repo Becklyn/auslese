@@ -21,7 +21,7 @@ export function CurrentLabels (props: CurrentLabelsProps): JSX.Element
     let randomId = `auslese-current-tags-input-${++renderIndex}`;
 
     return (
-        <label class="auslese-current auslese-tags" for={randomId}>
+        <label class="auslese-current auslese-current-tags" for={randomId}>
             {props.choices.map(choice => (
                 <span class="auslese-tag">
                     <span class="auslese-tag-label">{choice.label}</span>
