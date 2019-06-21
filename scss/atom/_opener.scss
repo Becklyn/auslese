@@ -9,34 +9,34 @@
     line-height: 1;
     background-color: $auslese-bg;
 
-    .auslese-current {
-        @include flex-fill-width;
-        padding: 12px 20px;
-        color: $auslese-current;
-
-        &.auslese-placeholder {
-            color: $auslese-current-placeholder;
-        }
-    }
-
-    .auslese-current-text {
-        @include text-overflow;
-        text-align: left;
-        cursor: pointer;
-    }
-
-    .auslese-current-chevron {
-        @include fixed-flex-width(50px);
-        @include center-children;
-
-        &:focus,
-        &:hover {
-            background-color: $auslese-tag-focus-bg;
-            color: $auslese-tag-focus;
-        }
-    }
-
     svg {
         @include transition(transform);
+    }
+}
+
+.auslese-current {
+    @include flex-fill-width;
+    padding: 12px 20px;
+    color: $auslese-current;
+
+    &.auslese-placeholder {
+        color: $auslese-current-placeholder;
+    }
+}
+
+.auslese-current-text {
+    @include text-overflow;
+    text-align: left;
+    cursor: pointer;
+}
+
+.auslese-current-chevron {
+    @include fixed-flex-width(50px);
+    @include center-children;
+
+    &:focus,
+    &:hover {
+        background-color: $auslese-tag-focus-bg;
+        color: $auslese-tag-focus;
     }
 }

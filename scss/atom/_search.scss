@@ -4,29 +4,29 @@
 .auslese-search {
     padding: 20px;
     border-bottom: .1rem solid $auslese-border-color;
+}
 
-    .auslese-search-widget {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        padding: 3px 10px;
-        border: 1px solid $auslese-search-border;
+.auslese-search-widget {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 3px 10px;
+    border: 1px solid $auslese-search-border;
 
-        svg {
-            width: 20px;
-            height: 20px;
-        }
+    svg {
+        width: 20px;
+        height: 20px;
     }
+}
 
-    .auslese-search-input {
-        @include flex-fill-width;
-        background: none transparent;
-        border: 0;
-        color: $auslese-search;
-        margin-left: 1rem;
+.auslese-search-input {
+    @include flex-fill-width;
+    background: none transparent;
+    border: 0;
+    color: $auslese-search;
+    margin-left: 1rem;
 
-        &::placeholder {
-            color: $auslese-search-placeholder;
-        }
+    &::placeholder {
+        color: $auslese-search-placeholder;
     }
 }

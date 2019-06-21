@@ -1,44 +1,9 @@
 @import "../helper/variables";
 
 .auslese {
-    display: block;
-    position: relative;
-    font-weight: 400;
-    font-size: 14px;
-
-    .auslese-dropdown-container {
-        position: absolute;
-        top: 100%;
-        padding-top: 10px;
-        min-width: 100%;
-    }
 
     .auslese-clear + .auslese-search {
         padding-top: 10px;
-    }
-
-    &.auslese-open {
-        .auslese-current-chevron svg {
-            transform: rotateZ(180deg);
-        }
-    }
-
-    &.auslese-tags-select,
-    &.auslese-multiple-select {
-        .auslese-check {
-            border: 1px solid $auslese-multi-check-border;
-        }
-
-        .auslese-selected {
-            .auslese-check {
-                background-color: $auslese-multi-check-selected-bg;
-                color: $auslese-multi-check-selected;
-            }
-
-            :disabled .auslese-check {
-                background-color: $auslese-choice-disabled;
-            }
-        }
     }
 
     &.auslese-tags-select {

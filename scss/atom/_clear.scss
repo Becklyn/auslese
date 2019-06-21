@@ -2,13 +2,13 @@
     display: flex;
     justify-content: flex-end;
     padding: 5px 10px 0;
+}
 
-    .auslese-clear-button {
-        padding: 10px;
+.auslese-clear-button {
+    padding: 10px;
 
-        &:focus,
-        &:hover {
-            text-decoration: underline;
-        }
+    &:focus,
+    &:hover {
+        text-decoration: underline;
     }
 }

@@ -120,6 +120,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     onToggle={choice => this.toggleChoice(choice)}
                     onFocus={choice => this.focusChoice(choice)}
                     focus={state.focus}
+                    multiple={"single" !== type}
                 />
             ));
         }
@@ -151,27 +152,25 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             class={`auslese auslese-${type}-select ${state.dropdown ? "auslese-open" : ""} ${props.class || ""}`}
             onKeyDown={e => this.onKeyDown(e, renderGroups)}
         >
-            <div class="auslese-opener">
-                {"tags" === type ? (
-                    <CurrentLabels
-                        choices={selectedChoices}
-                        placeholder={placeholder}
-                        search={state.search}
-                        onInput={event => this.onInput(event)}
-                        onRemove={choice => this.toggleChoice(choice)}
-                        onFocus={() => this.open()}
-                    />
-                ) : (
-                    <CurrentText
-                        onClick={event => this.toggleOpen(event)}
-                        placeholder={placeholder}
-                        selected={selectedChoices}
-                    />
-                )}
-                <button type="button" class="auslese-current-chevron" onClick={() => this.toggleOpen()}>
-                    <ChevronIcon/>
-                </button>
-            </div>
+            {"tags" === type ? (
+                <CurrentLabels
+                    choices={selectedChoices}
+                    placeholder={placeholder}
+                    search={state.search}
+                    onInput={event => this.onInput(event)}
+                    onRemove={choice => this.toggleChoice(choice)}
+                    onFocus={() => this.open()}
+                />
+            ) : (
+                <CurrentText
+                    onClick={event => this.toggleOpen(event)}
+                    placeholder={placeholder}
+                    selected={selectedChoices}
+                />
+            )}
+            <button type="button" class="auslese-current-chevron" onClick={() => this.toggleOpen()}>
+                <ChevronIcon/>
+            </button>
         </div>;
     }
 
@@ -296,7 +295,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     selection.set(choice, !selection.get(choice));
                 }
 
-                return {selection};
+                return {selection, search: ""};
             },
             () => {
                 this.emitUpdate();
@@ -439,19 +438,26 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             case " ":
                 if (this.state.focus !== null)
                 {
-                    this.moveChoiceFocus(renderGroups, false);
+                    // we need to move the focus, as the element will disappear
+                    if ("multiple" === this.state.type)
+                    {
+                        this.moveChoiceFocus(renderGroups, false);
+                    }
                     this.toggleChoice(this.state.focus);
+                    handled = true;
                 }
                 break;
 
             case "tab":
             case "escape":
                 this.close();
+                handled = true;
                 break;
 
             case "arrowdown":
             case "arrowup":
                 this.moveChoiceFocus(renderGroups, "arrowup" === key);
+                handled = true;
                 break;
         }
 

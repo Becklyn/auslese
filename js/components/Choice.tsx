@@ -14,6 +14,7 @@ export interface ChoiceProps
     focus: boolean;
     onToggle: () => void;
     onFocus: () => void;
+    multiple: boolean;
 }
 
 
@@ -50,7 +51,7 @@ export function Choice (props: ChoiceProps): JSX.Element
                 onClick={onToggle}
                 onMouseEnter={onFocus}
             >
-                <i class="auslese-check">
+                <i class={`auslese-check ${props.multiple ? "auslese-check-multiple" : "auslese-check-single"}`}>
                     {props.selected && (
                         <CheckIcon/>
                     )}

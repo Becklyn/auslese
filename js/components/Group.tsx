@@ -1,3 +1,4 @@
+import {classes} from "mojave/classes";
 import {h} from "preact";
 import {AusleseTypes} from "../@types/auslese";
 import {Choice} from "./Choice";
@@ -12,6 +13,7 @@ export interface GroupProps
     onToggle: (choice: AusleseTypes.Choice) => void;
     onFocus: (choice: AusleseTypes.Choice) => void;
     focus: AusleseTypes.Choice|null;
+    multiple: boolean;
 }
 
 
@@ -26,7 +28,12 @@ export function Group (props: GroupProps): JSX.Element|null
     }
 
     return (
-        <div class={`auslese-group ${group.header ? "auslese-header-group" : ""}`}>
+        <div
+            class={classes({
+                "auslese-group": true,
+                "auslese-header-group": !!group.header,
+            })}
+        >
             {group.headline && (
                 <h4 class="auslese-group-title">{group.headline}</h4>
             )}
@@ -39,6 +46,7 @@ export function Group (props: GroupProps): JSX.Element|null
                         focus={props.focus === choice}
                         onToggle={() => props.onToggle(choice)}
                         onFocus={() => props.onFocus(choice)}
+                        multiple={props.multiple}
                     />
                 ))}
             </ul>
