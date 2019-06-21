@@ -103,6 +103,8 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         let placeholder = props.placeholder || "Bitte wählen";
         let isClearable = selectedChoices.some(choice => !choice.disabled);
         let hasSearchForm = "tags" !== type && flattenedChoices.length > 5;
+        // you can reset the form if it is either multi select or if there is a placeholder
+        let canClear = "single" !== type || !!props.placeholder;
 
 
         let dropdownContent: preact.ComponentChildren;
@@ -129,7 +131,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         {
             render((
                     <Dropdown
-                        isClearable={isClearable}
+                        isClearable={canClear && isClearable}
                         resetText={props.resetText || "Auswahl zurücksetzen"}
                         search={state.search}
                         placeholder={placeholder}
@@ -295,7 +297,11 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     selection.set(choice, !selection.get(choice));
                 }
 
-                return {selection, search: ""};
+                return {
+                    selection,
+                    search: "",
+                    focus: null,
+                };
             },
             () => {
                 this.emitUpdate();
