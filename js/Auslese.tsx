@@ -279,12 +279,14 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             return;
         }
 
+        let isSingle = ("single" === this.state.type);
+
         this.setState(
             state =>
             {
                 let selection = state.selection;
 
-                if ("single" === state.type)
+                if (isSingle)
                 {
                     selection = this.clearSelection();
                     selection.set(choice, true);
@@ -296,7 +298,14 @@ export class Auslese extends Component<AusleseProps, AusleseState>
 
                 return {selection};
             },
-            () => this.emitUpdate(),
+            () => {
+                this.emitUpdate();
+
+                if (isSingle)
+                {
+                    this.close();
+                }
+            },
         );
     }
 
