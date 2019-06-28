@@ -1,0 +1,21 @@
+@import "../helper/mixins";
+
+.auslese-check {
+    $size: 24px;
+    @include fixed-flex-width($size);
+    content: "";
+    height: $size;
+    margin-right: 10px;
+    border-radius: 2px;
+
+    svg {
+        height: 100%;
+        width: 100%;
+    }
+}
+
+@if $auslese-multi-check-border != 0 {
+    .auslese-check-multiple {
+        border: $auslese-multi-check-border;
+    }
+}

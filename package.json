@@ -2,7 +2,31 @@
     "name": "auslese",
     "description": "A tiny + fast choice / dropdown preact component.",
     "version": "0.0.1",
+    "scripts": {
+        "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals",
+        "dev": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty -w",
+        "prepublishOnly": "npm run-script build",
+        "test": "ava"
+    },
+    "main": "js/index.js",
+    "dependencies": {
+        "match-sorter": "^3.1.1",
+        "mojave": "^4.2.0",
+        "preact": "^10.0.0-beta.2"
+    },
     "devDependencies": {
+        "@types/match-sorter": "^2.3.0",
+        "ava": "^2.1.0",
+        "esm": "^3.2.25",
+        "terser": "^4.0.0",
         "typescript": "^3.4.5"
+    },
+    "ava": {
+        "files": [
+            "tests/**/*"
+        ],
+        "require": [
+            "esm"
+        ]
     }
 }

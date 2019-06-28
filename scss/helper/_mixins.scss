@@ -1,0 +1,65 @@
+///
+/// Adds a convenience wrapper for setting the text overflow for an element
+///
+@mixin text-overflow {
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+///
+/// A flex item with a fixed (optionally specified) width
+///
+@mixin fixed-flex-width ($width: null) {
+    flex-grow: 0;
+    flex-shrink: 0;
+    min-width: 0;
+
+    @if $width != null {
+        width: $width;
+    }
+}
+
+
+///
+/// Centers the children
+///
+@mixin center-children {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+///
+/// Compiles to a transition declaration and will automatically generate the `will-change` property as well.
+///
+/// For multiple properties, just pass in a space separated list as the first parameter, like this:
+///
+///    @include transition(height width top, .5s);
+///
+@mixin transition ($properties, $duration: .15s, $easing: ease-in-out, $will-change: true) {
+    @if $will-change {
+        will-change: join($properties, (), 'comma');
+    }
+
+    @if (1 == length($properties)) {
+        transition: #{$duration} #{$easing} #{$properties};
+    }
+    @else {
+        transition: #{$duration} #{$easing};
+        transition-property: $properties;
+    }
+}
+
+
+///
+/// Fills the flex item
+///
+@mixin flex-fill-width {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+

@@ -1,0 +1,36 @@
+@import "../helper/variables";
+
+.auslese-group {
+    padding: 10px;
+
+    li {
+        display: block;
+
+        + li {
+            margin-top: 5px;
+        }
+    }
+}
+
+.auslese-group-title {
+    padding: 0 10px 5px;
+    color: $auslese-group-title;
+    cursor: default;
+    font-weight: 700;
+}
+
+.auslese-header-group {
+    position: relative;
+    padding-top: 5px;
+    padding-bottom: 15px;
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 20px;
+        right: 20px;
+        height: 1px;
+        background-color: $auslese-border-color;
+    }
+}

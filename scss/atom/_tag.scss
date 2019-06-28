@@ -1,0 +1,37 @@
+@import "../helper/variables";
+
+.auslese-tag {
+    cursor: default;
+    display: flex;
+    align-items: stretch;
+    background-color: $auslese-tag-bg;
+    max-width: 100%;
+    line-height: 24px;
+    padding: 0 10px;
+}
+
+.auslese-tag-label {
+    @include text-overflow;
+    flex-grow: 0;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.auslese-tag-delete {
+    @include fixed-flex-width(24px);
+    @include center-children;
+    margin-left: 3px;
+    cursor: pointer;
+    margin-right: -10px;
+
+    svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    &:focus,
+    &:hover {
+        color: $auslese-tag-focus;
+        background-color: $auslese-tag-focus-bg;
+    }
+}
