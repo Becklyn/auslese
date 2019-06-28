@@ -3,7 +3,7 @@
 
 .auslese-search {
     padding: 20px;
-    border-bottom: .1rem solid $auslese-border-color;
+    border-bottom: 1px solid $auslese-border-color;
 }
 
 .auslese-search-widget {
@@ -24,7 +24,7 @@
     background: none transparent;
     border: 0;
     color: $auslese-search;
-    margin-left: 1rem;
+    margin-left: 10px;
 
     &::placeholder {
         color: $auslese-search-placeholder;
