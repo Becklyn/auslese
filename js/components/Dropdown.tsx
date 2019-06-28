@@ -103,6 +103,7 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
         for (let i = 0; i < propsThatMightChangeTheHeight.length; i++)
         {
             let prop = propsThatMightChangeTheHeight[i];
+
             if (nextProps[prop] !== this.props[prop])
             {
                 return true;
