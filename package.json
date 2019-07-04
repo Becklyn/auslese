@@ -1,7 +1,7 @@
 {
     "name": "auslese",
     "description": "A tiny + fast choice / dropdown preact component.",
-    "version": "0.0.1",
+    "version": "1.0.0",
     "scripts": {
         "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals",
         "dev": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty -w",
