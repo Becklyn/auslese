@@ -10,7 +10,7 @@ let files = {
     'automount.js': 1100,
     'lib/helper.js': 850,
     'lib/icons.js': 1400,
-    'components/Choice.js': 475,
+    'components/Choice.js': 500,
     'components/CurrentLabels.js': 550,
     'components/CurrentText.js': 250,
     'components/Group.js': 450,
