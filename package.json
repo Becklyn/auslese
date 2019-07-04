@@ -1,6 +1,13 @@
 {
     "name": "auslese",
     "description": "A tiny + fast choice / dropdown preact component.",
+    "license": "BSD-3-Clause",
+    "author": "Becklyn Studios <hello@becklyn.com>",
+    "homepage": "https://github.com/Becklyn/auslese",
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/Becklyn/auslese.git"
+    },
     "version": "1.0.0",
     "scripts": {
         "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals",
