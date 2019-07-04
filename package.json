@@ -8,7 +8,7 @@
         "type": "git",
         "url": "git://github.com/Becklyn/auslese.git"
     },
-    "version": "1.0.0",
+    "version": "1.0.1",
     "scripts": {
         "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals",
         "dev": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty -w",
