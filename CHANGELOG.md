@@ -1,4 +1,18 @@
+1.1.0
+=====
+
+*   Fixed an invalid variable access that lead to an error.
+*   Fix rendering if the select is empty, now a info message is displayed instead.
+*   Made static texts configurable when automounting.
+
+
 1.0.1
 =====
 
 *   Added more info in the package.json
+
+
+1.0.0
+=====
+
+Initial release `\o/`
