@@ -23,6 +23,7 @@ export interface AusleseProps
     class?: string|null;
     placeholder?: string;
     emptyResultsMessage?: string;
+    emptyMessage?: string;
     resetText?: string;
 }
 
@@ -103,11 +104,6 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     {
         let {groups, selection, type} = state;
 
-        if (!state.groups.length)
-        {
-            return null;
-        }
-
         // Prepare basic data
         let flattenedChoices = flattenChoices(groups);
         let selectedChoices = flattenedChoices.filter(choice => selection.get(choice));
@@ -119,12 +115,15 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         // you can reset the form if it is either multi select or if there is a placeholder
         let canClear = "single" !== type || !!props.placeholder;
 
-
         let dropdownContent: preact.ComponentChildren;
+
         // if has search and no matches
-        if ("" !== searchQuery && !renderGroups.length)
+        if (!renderGroups.length)
         {
-            dropdownContent = <div class="auslese-message">{props.emptyResultsMessage || "Keine passenden Einträge gefunden."}</div>;
+            let message = ("" !== searchQuery)
+                ? (props.emptyResultsMessage || "Keine passenden Einträge gefunden.")
+                : (props.emptyMessage || "Keine Einträge vorhanden.");
+            dropdownContent = <div class="auslese-message">{message}</div>;
         }
         else
         {
