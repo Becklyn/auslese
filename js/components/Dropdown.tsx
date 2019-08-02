@@ -41,11 +41,14 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
         this.attachment = attachDropdown(this.props.outerRef, this.props.overlay);
         on((this.base as HTMLElement).parentElement, "auslese:scroll-to-focus", () => this.scrollToFocus());
 
-        // apparently we need to do it in the next task
-        window.setTimeout(
-            () => this.input && this.input.focus(),
-            50
-        );
+        if (this.input)
+        {
+            // apparently we need to do it in the next task
+            window.setTimeout(
+                () => this.input && this.input.focus(),
+                50
+            );
+        }
     }
 
 
@@ -82,7 +85,10 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
             this.needsUpdate = false;
         }
 
-        (this.input as HTMLInputElement).focus()
+        if (this.input)
+        {
+            this.input.focus();
+        }
     }
 
 
