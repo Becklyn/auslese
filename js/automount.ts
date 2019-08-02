@@ -1,4 +1,5 @@
 import {children} from "mojave/dom/traverse";
+import {extend} from "mojave/extend";
 import {render, createElement} from "preact";
 import {AusleseTypes} from "./@types/auslese";
 import {Auslese, AusleseProps} from "./Auslese";
@@ -8,6 +9,14 @@ interface ParseSelectResult
 {
     mapping: WeakMap<AusleseTypes.Choice, HTMLOptionElement>;
     props: AusleseProps;
+}
+
+interface AusleseMountOptions
+{
+    placeholder?: string;
+    emptyResultsMessage?: string;
+    emptyMessage?: string;
+    resetText?: string;
 }
 
 
@@ -111,7 +120,7 @@ function updateSelectState (
 /**
  * Mount auslese on the given elements
  */
-export function mountAuslese (selector: string, context?: Document|Element)
+export function mountAuslese (selector: string, context?: Document|Element, options: AusleseMountOptions = {})
 {
     (context || document).querySelectorAll(selector).forEach(
         select =>
@@ -122,6 +131,7 @@ export function mountAuslese (selector: string, context?: Document|Element)
             }
 
             let data = parseSelect(select);
+            data.props = extend(data.props, options) as AusleseProps;
             data.props.onChange = selection => updateSelectState(select, data.mapping, selection);
 
             render(
