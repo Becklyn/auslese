@@ -18,15 +18,15 @@
     "main": "js/index.js",
     "dependencies": {
         "match-sorter": "^3.1.1",
-        "mojave": "^4.2.0",
-        "preact": "^10.0.0-beta.2"
+        "mojave": "^4.5.1",
+        "preact": "^10.0.0-rc.0"
     },
     "devDependencies": {
         "@types/match-sorter": "^2.3.0",
-        "ava": "^2.1.0",
+        "ava": "^2.2.0",
         "esm": "^3.2.25",
-        "terser": "^4.0.0",
-        "typescript": "^3.4.5"
+        "terser": "^4.1.2",
+        "typescript": "^3.5.3"
     },
     "ava": {
         "files": [
