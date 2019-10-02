@@ -20,6 +20,7 @@ export interface AusleseProps
     type?: AusleseTypes.SelectionType;
     selections?: WeakMap<AusleseTypes.Choice, boolean>;
     onChange?: (selection: AusleseTypes.SelectedChoice[]) => void;
+    dropdownHolder?: HTMLElement;
     class?: string|null;
     placeholder?: string;
     emptyResultsMessage?: string;
@@ -53,7 +54,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     public constructor (props: Readonly<AusleseProps>)
     {
         super(props);
-        this.dropdownHolder = document.body;
+        this.dropdownHolder = props.dropdownHolder || document.body;
         this.state = this.initState(props);
         this.onBodyClickBound = event => this.onBodyClick(event);
     }
@@ -193,17 +194,13 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     /**
      * Opens the dropdown
      */
-    private open (event?: Event): void
+    private open (): void
     {
         if (this.state.dropdown)
         {
             return;
         }
 
-        if (event)
-        {
-            event.stopPropagation();
-        }
 
         let dropdown = document.createElement("div");
         dropdown.setAttribute("class", "auslese-overlay");
@@ -351,7 +348,6 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     {
         if (event)
         {
-            event.stopPropagation();
             event.preventDefault();
         }
 
@@ -361,7 +357,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         }
         else
         {
-            this.open(event);
+            this.open();
         }
     }
 

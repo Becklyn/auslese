@@ -33,4 +33,8 @@
         height: 1px;
         background-color: $auslese-border-color;
     }
+
+    &:last-child::after {
+        content: none;
+    }
 }

@@ -2,6 +2,7 @@
 
 .auslese-choice {
     &.auslese-selected .auslese-check-multiple {
+        border-color: $auslese-multi-check-selected-bg;
         background-color: $auslese-multi-check-selected-bg;
         color: $auslese-multi-check-selected;
     }
@@ -17,6 +18,7 @@
     text-align: left;
     width: 100%;
     color: $auslese-choice-text;
+    line-height: $auslese-check-size;
 
     &:disabled {
         color: $auslese-choice-disabled;
