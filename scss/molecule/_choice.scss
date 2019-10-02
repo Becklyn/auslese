@@ -2,6 +2,7 @@
 
 .auslese-choice {
     &.auslese-selected .auslese-check-multiple {
+        border-color: $auslese-multi-check-selected-bg;
         background-color: $auslese-multi-check-selected-bg;
         color: $auslese-multi-check-selected;
     }

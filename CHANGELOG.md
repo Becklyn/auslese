@@ -4,6 +4,7 @@
 *   Properly close dropdowns if another one is opened.
 *   Make dropdown holder configurable
 *   Properly render check item in smaller font sizes
+*   Improve checked multi item rendering.
 
 
 1.1.1
