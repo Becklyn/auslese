@@ -9,13 +9,13 @@
         "url": "git://github.com/Becklyn/auslese.git"
     },
     "version": "1.1.0",
+    "main": "js/index.js",
     "scripts": {
         "build": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty --noUnusedLocals",
         "dev": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty -w",
         "prepublishOnly": "npm run-script build",
         "test": "ava"
     },
-    "main": "js/index.js",
     "dependencies": {
         "match-sorter": "^3.1.1",
         "mojave": "^4.5.1",
