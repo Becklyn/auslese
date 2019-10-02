@@ -2,6 +2,7 @@
 =====
 
 *   Properly close dropdowns if another one is opened.
+*   Make dropdown holder configurable
 
 
 1.1.1

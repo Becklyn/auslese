@@ -17,6 +17,7 @@ interface AusleseMountOptions
     emptyResultsMessage?: string;
     emptyMessage?: string;
     resetText?: string;
+    dropdownHolder?: HTMLElement;
 }
 
 
@@ -133,6 +134,7 @@ export function mountAuslese (selector: string, context?: Document|Element, opti
             let data = parseSelect(select);
             data.props = extend(data.props, options) as AusleseProps;
             data.props.onChange = selection => updateSelectState(select, data.mapping, selection);
+            data.props.dropdownHolder = options.dropdownHolder;
 
             render(
                 createElement(Auslese, data.props),
