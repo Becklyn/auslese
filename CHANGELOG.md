@@ -1,3 +1,9 @@
+1.1.1
+=====
+
+*   Fixed a missing import.
+
+
 1.1.0
 =====
 
