@@ -5,6 +5,7 @@
 *   Make dropdown holder configurable
 *   Properly render check item in smaller font sizes
 *   Improve checked multi item rendering.
+*   Don't display separator line after header group, if nothing comes after it.
 
 
 1.1.1
