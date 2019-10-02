@@ -17,6 +17,7 @@
     text-align: left;
     width: 100%;
     color: $auslese-choice-text;
+    line-height: $auslese-check-size;
 
     &:disabled {
         color: $auslese-choice-disabled;

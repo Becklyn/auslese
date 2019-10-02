@@ -3,6 +3,7 @@
 
 *   Properly close dropdowns if another one is opened.
 *   Make dropdown holder configurable
+*   Properly render check item in smaller font sizes
 
 
 1.1.1
