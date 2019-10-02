@@ -1,3 +1,9 @@
+1.1.2
+=====
+
+*   Properly close dropdowns if another one is opened.
+
+
 1.1.1
 =====
 

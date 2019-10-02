@@ -193,17 +193,13 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     /**
      * Opens the dropdown
      */
-    private open (event?: Event): void
+    private open (): void
     {
         if (this.state.dropdown)
         {
             return;
         }
 
-        if (event)
-        {
-            event.stopPropagation();
-        }
 
         let dropdown = document.createElement("div");
         dropdown.setAttribute("class", "auslese-overlay");
@@ -351,7 +347,6 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     {
         if (event)
         {
-            event.stopPropagation();
             event.preventDefault();
         }
 
@@ -361,7 +356,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         }
         else
         {
-            this.open(event);
+            this.open();
         }
     }
 
