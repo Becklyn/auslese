@@ -18,7 +18,7 @@
     },
     "dependencies": {
         "match-sorter": "^3.1.1",
-        "mojave": "^4.5.1",
+        "mojave": "^5.0.0",
         "preact": "^10.0.0"
     },
     "devDependencies": {
