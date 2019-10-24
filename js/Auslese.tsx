@@ -31,7 +31,9 @@ export interface AusleseProps
 
 export interface AusleseState
 {
+    choices: (AusleseTypes.Choice|AusleseTypes.Group)[];
     groups: AusleseTypes.Group[];
+    flattened: AusleseTypes.Choice[];
     type: AusleseTypes.SelectionType;
     dropdown: HTMLElement|null;
     search: string;
@@ -55,7 +57,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     {
         super(props);
         this.dropdownHolder = props.dropdownHolder || document.body;
-        this.state = this.initState(props);
+        this.state = Auslese.initState(props);
         this.onBodyClickBound = event => this.onBodyClick(event);
     }
 
@@ -63,19 +65,36 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     /**
      * @inheritDoc
      */
-    public componentWillReceiveProps (nextProps: Readonly<AusleseProps>): void
+    public static getDerivedStateFromProps (props: Readonly<AusleseProps>, state: Readonly<AusleseState>): Partial<AusleseState>|null
     {
-        this.setState(this.initState(nextProps));
+        // reset if the choices have changed
+        if (props.choices !== state.choices)
+        {
+            // if there is an open dropdown -> close it
+            // setting the state to `null` happens in `initState()` and removing the event listener will happen on the next click
+            if (state.dropdown)
+            {
+                Auslese.removeDropdown(state.dropdown);
+            }
+
+            return Auslese.initState(props);
+        }
+
+        return null;
     }
 
 
     /**
      * Generates the internal state
      */
-    private initState (props: Readonly<AusleseProps>): AusleseState
+    private static initState (props: Readonly<AusleseProps>): AusleseState
     {
+        let groups = sanitizeGroups(props.choices);
+
         return {
-            groups: sanitizeGroups(props.choices),
+            choices: props.choices,
+            groups: groups,
+            flattened: flattenChoices(groups),
             selection: props.selections || new WeakMap<AusleseTypes.Choice, boolean>(),
             dropdown: null,
             search: "",
@@ -103,16 +122,15 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     public render (props: AusleseProps, state: AusleseState): preact.ComponentChild
     {
-        let {groups, selection, type} = state;
+        let {groups, flattened, selection, type} = state;
 
         // Prepare basic data
-        let flattenedChoices = flattenChoices(groups);
-        let selectedChoices = flattenedChoices.filter(choice => selection.get(choice));
+        let selectedChoices = flattened.filter(choice => selection.get(choice));
         let searchQuery = state.search.trim();
         let renderGroups = buildRenderGroups(groups, selection, type, searchQuery);
         let placeholder = props.placeholder || "Bitte wählen";
         let isClearable = selectedChoices.some(choice => !choice.disabled);
-        let hasSearchForm = "tags" !== type && flattenedChoices.length > 5;
+        let hasSearchForm = "tags" !== type && flattened.length > 5;
         // you can reset the form if it is either multi select or if there is a placeholder
         let canClear = "single" !== type || !!props.placeholder;
 
@@ -201,6 +219,8 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             return;
         }
 
+        // be sure to clean up the event listener, to not have it multiple times
+        document.body.removeEventListener("click", this.onBodyClickBound, false);
 
         let dropdown = document.createElement("div");
         dropdown.setAttribute("class", "auslese-overlay");
@@ -221,15 +241,23 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             return;
         }
 
-        render(null, this.state.dropdown);
-        (this.state.dropdown.parentNode as Element).removeChild(this.state.dropdown);
-
+        Auslese.removeDropdown(this.state.dropdown);
         document.body.removeEventListener("click", this.onBodyClickBound, false);
         this.setState({
             dropdown: null,
             search: "",
             focus: null,
         });
+    }
+
+
+    /**
+     * Removes the rendered dropdown from the DOM
+     */
+    private static removeDropdown (dropdown: HTMLElement) : void
+    {
+        render(null, dropdown);
+        (dropdown.parentNode as Element).removeChild(dropdown);
     }
 
 
@@ -369,6 +397,9 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     {
         if (!this.state.dropdown)
         {
+            // if a props change closed the popup, the event listener is still registered.
+            // so if we end up here, this is probably the case. Be sure to now really remove the listener
+            document.body.removeEventListener("click", this.onBodyClickBound, false);
             return;
         }
 
@@ -486,21 +517,6 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private getSelected (): AusleseTypes.Choice[]
     {
-        return this.getChoices().filter(choice => this.state.selection.get(choice));
-    }
-
-
-    /**
-     * Returns the choices
-     */
-    private getChoices (): AusleseTypes.Choice[]
-    {
-        let flattened: AusleseTypes.Choice[] = [];
-
-        this.state.groups.forEach(
-            group => group.choices.forEach(c => flattened.push(c)),
-        );
-
-        return flattened;
+        return this.state.flattened.filter(choice => this.state.selection.get(choice));
     }
 }

@@ -1,3 +1,10 @@
+1.1.4
+=====
+
+*   Fix several issues, in which the component reinitialized itself and lost all settings (like selections).
+*   Cache more derived data in the state (might give a minimal performance boost). 
+
+
 1.1.3
 =====
 
