@@ -1,5 +1,5 @@
-next patch
-==========
+1.1.5
+=====
 
 *   (bug) Use `popper.js` instead of custom placement implementation, to solve all dropdown issues.
 
