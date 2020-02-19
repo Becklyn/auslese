@@ -29,8 +29,8 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
 {
     private attachment: Instance|undefined;
     private needsUpdate: boolean = false;
-    private window: HTMLElement|undefined;
-    private input: HTMLInputElement|undefined;
+    private window: HTMLElement|null = null;
+    private input: HTMLInputElement|null = null;
 
 
     /**
