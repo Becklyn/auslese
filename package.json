@@ -17,6 +17,7 @@
         "test": "ava"
     },
     "dependencies": {
+        "@popperjs/core": "^2.0.6",
         "match-sorter": "^3.1.1",
         "mojave": "^5.0.0",
         "preact": "^10.0.0"

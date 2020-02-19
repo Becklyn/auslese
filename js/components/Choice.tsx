@@ -1,10 +1,9 @@
 import {classes} from "mojave/classes";
 import {h} from "preact";
-import {JSXInternal} from "preact/src/jsx";
 import {CheckIcon} from "../lib/icons";
 import JSX = preact.h.JSX;
-import EventHandler = JSXInternal.EventHandler;
 
+type SimpleEventHandler = (event: Event) => void;
 
 export interface ChoiceProps
 {
@@ -21,8 +20,8 @@ export interface ChoiceProps
 
 export function Choice (props: ChoiceProps): JSX.Element
 {
-    let onToggle: EventHandler<Event>|undefined;
-    let onMouseEnter: EventHandler<Event>|undefined;
+    let onToggle: SimpleEventHandler|undefined;
+    let onMouseEnter: SimpleEventHandler|undefined;
 
     if (!props.disabled)
     {

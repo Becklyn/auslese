@@ -1,7 +1,7 @@
+import {createPopper, Instance} from "@popperjs/core";
 import {on} from "mojave/dom/events";
 import {findOne} from "mojave/dom/traverse";
 import {Component, h} from "preact";
-import {AttachDirector, attachDropdown} from "../lib/attach-dropdown";
 import {LoadingIcon, SearchIcon} from "../lib/icons";
 
 
@@ -27,10 +27,10 @@ export interface DropdownState
 
 export class Dropdown extends Component<DropdownProps, DropdownState>
 {
-    private attachment: AttachDirector|undefined;
+    private attachment: Instance|undefined;
     private needsUpdate: boolean = false;
-    private window: HTMLElement|undefined;
-    private input: HTMLInputElement|undefined;
+    private window: HTMLElement|null = null;
+    private input: HTMLInputElement|null = null;
 
 
     /**
@@ -38,7 +38,28 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
      */
     public componentDidMount (): void
     {
-        this.attachment = attachDropdown(this.props.outerRef, this.props.overlay);
+        this.props.overlay.style.width = `${this.props.outerRef.offsetWidth}px`;
+
+        this.attachment = createPopper(this.props.outerRef, this.props.overlay, {
+            placement: "bottom",
+            modifiers: [
+                {
+                    name: "preventOverflow",
+                },
+                {
+                    name: "flip",
+                    options: {
+                        fallbackPlacements: ["top"],
+                    },
+                },
+                {
+                    name: 'offset',
+                    options: {
+                        offset: [0, 10],
+                    },
+                },
+            ],
+        });
         on((this.base as HTMLElement).parentElement, "auslese:scroll-to-focus", () => this.scrollToFocus());
 
         if (this.input)
@@ -59,7 +80,7 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
     {
         if (this.attachment)
         {
-            this.attachment.remove();
+            this.attachment.destroy();
         }
     }
 
