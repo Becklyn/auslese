@@ -1,3 +1,9 @@
+next patch
+==========
+
+*   (bug) Use `popper.js` instead of custom placement implementation, to solve all dropdown issues.
+
+
 1.1.4
 =====
 
