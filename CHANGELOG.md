@@ -1,3 +1,9 @@
+1.1.6
+=====
+
+*   (improvement) Add new option `dropdownClass` to pass custom classes to the dropdown.
+
+
 1.1.5
 =====
 

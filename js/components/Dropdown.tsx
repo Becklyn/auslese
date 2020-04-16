@@ -19,6 +19,7 @@ export interface DropdownProps
     children: preact.ComponentChildren;
     overlay: HTMLElement;
     onKeyDown: (event: KeyboardEvent) => void;
+    class?: string|null;
 }
 
 export interface DropdownState
@@ -148,7 +149,7 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
     public render (props: DropdownProps, state: DropdownState): preact.ComponentChild
     {
         return (
-            <div class="auslese-dropdown" onKeyDown={props.onKeyDown}>
+            <div class={`auslese-dropdown ${props.class}`} onKeyDown={props.onKeyDown}>
                 {props.isClearable && (
                     <div class="auslese-clear">
                         <button

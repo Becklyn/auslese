@@ -21,6 +21,7 @@ export interface AusleseProps
     selections?: WeakMap<AusleseTypes.Choice, boolean>;
     onChange?: (selection: AusleseTypes.SelectedChoice[]) => void;
     dropdownHolder?: HTMLElement;
+    dropdownClass?: string|null;
     class?: string|null;
     placeholder?: string;
     emptyResultsMessage?: string;
@@ -173,6 +174,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                         outerRef={this.base as HTMLElement}
                         overlay={state.dropdown}
                         onKeyDown={event => this.onKeyDown(event, renderGroups)}
+                        class={props.dropdownClass}
                     >
                         {dropdownContent}
                     </Dropdown>
