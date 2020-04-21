@@ -2,6 +2,7 @@
 =====
 
 *   (bug) Fix invalid dropdown default class.
+*   (improvement) Hide dropdown if opener is not visible anymore.
 
 
 1.1.6

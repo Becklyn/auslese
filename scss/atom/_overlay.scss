@@ -3,4 +3,9 @@
 .auslese-overlay {
     position: absolute;
     z-index: $auslese-overlay-z;
+
+    &[data-popper-reference-hidden] {
+        visibility: hidden;
+        pointer-events: none;
+    }
 }
