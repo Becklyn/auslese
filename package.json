@@ -17,18 +17,18 @@
         "test": "ava"
     },
     "dependencies": {
-        "@popperjs/core": "^2.0.6",
+        "@popperjs/core": "^2.3.3",
         "match-sorter": "^3.1.1",
-        "mojave": "^5.0.0",
-        "preact": "^10.0.0"
+        "mojave": "^5.10.1",
+        "preact": "^10.4.1"
     },
     "devDependencies": {
         "@types/match-sorter": "^2.3.0",
         "ava": "^2.2.0",
         "esm": "^3.2.25",
         "node-sass": "^4.12.0",
-        "terser": "^4.1.2",
-        "typescript": "^3.5.3"
+        "terser": "^4.6.11",
+        "typescript": "^3.8.3"
     },
     "ava": {
         "files": [
