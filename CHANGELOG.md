@@ -1,14 +1,9 @@
-1.1.8
-=====
-
-*   (improvement) Bump dependencies.
-
-
 1.1.7
 =====
 
 *   (bug) Fix invalid dropdown default class.
 *   (improvement) Hide dropdown if opener is not visible anymore.
+*   (improvement) Bump dependencies.
 
 
 1.1.6
