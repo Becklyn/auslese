@@ -1,3 +1,9 @@
+1.1.7
+=====
+
+*   (bug) Fix invalid dropdown default class.
+
+
 1.1.6
 =====
 
