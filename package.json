@@ -18,24 +18,19 @@
     },
     "dependencies": {
         "@popperjs/core": "^2.3.3",
-        "match-sorter": "^3.1.1",
+        "match-sorter": "^4.1.0",
         "mojave": "^5.10.1",
         "preact": "^10.4.1"
     },
     "devDependencies": {
-        "@types/match-sorter": "^2.3.0",
-        "ava": "^2.2.0",
-        "esm": "^3.2.25",
+        "@ava/babel": "^1.0.1",
+        "@types/match-sorter": "^4.0.0",
+        "ava": "^3.7.1",
         "node-sass": "^4.12.0",
         "terser": "^4.6.11",
         "typescript": "^3.8.3"
     },
     "ava": {
-        "files": [
-            "tests/**/*"
-        ],
-        "require": [
-            "esm"
-        ]
+        "babel": true
     }
 }
