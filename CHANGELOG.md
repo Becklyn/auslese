@@ -1,7 +1,7 @@
 1.1.8
 =====
 
-*   (feature) Allow selecting choices by pressing <kbd>enter</kbd>
+*   (feature) Allow selecting choices by pressing <kbd>Enter</kbd>
 
 
 1.1.7
