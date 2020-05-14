@@ -486,6 +486,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         switch (key)
         {
             case " ":
+            case "enter":
                 if (this.state.focus !== null)
                 {
                     this.toggleChoice(this.state.focus);
