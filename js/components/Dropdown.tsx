@@ -120,7 +120,7 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
      */
     private needsAttachmentUpdate (nextProps: Readonly<DropdownProps>) : boolean
     {
-        let propsThatMightChangeTheHeight = [
+        const propsThatMightChangeTheHeight = [
             "hasSearchForm",
             "isClearable",
             "loading",
@@ -130,7 +130,7 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
 
         for (let i = 0; i < propsThatMightChangeTheHeight.length; i++)
         {
-            let prop = propsThatMightChangeTheHeight[i];
+            const prop = propsThatMightChangeTheHeight[i];
 
             if (nextProps[prop] !== this.props[prop])
             {
@@ -193,17 +193,17 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
      */
     private scrollToFocus () : void
     {
-        let focused = findOne(".auslese-focus", this.base as HTMLElement);
+        const focused = findOne(".auslese-focus", this.base as HTMLElement);
 
         if (!focused || !this.window)
         {
             return;
         }
 
-        let windowBox = this.window.getBoundingClientRect();
-        let windowScroll = this.window.scrollTop;
-        let focusedBox = focused.getBoundingClientRect();
-        let topOffset = focusedBox.top + windowScroll - windowBox.top;
+        const windowBox = this.window.getBoundingClientRect();
+        const windowScroll = this.window.scrollTop;
+        const focusedBox = focused.getBoundingClientRect();
+        const topOffset = focusedBox.top + windowScroll - windowBox.top;
 
         if (topOffset < windowScroll)
         {
@@ -211,7 +211,7 @@ export class Dropdown extends Component<DropdownProps, DropdownState>
             return;
         }
 
-        let bottomOffset = windowScroll + focusedBox.bottom - windowBox.top;
+        const bottomOffset = windowScroll + focusedBox.bottom - windowBox.top;
 
         if (bottomOffset > (windowScroll + windowBox.height))
         {

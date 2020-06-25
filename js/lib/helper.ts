@@ -31,8 +31,8 @@ export function buildRenderGroups (
     search: string
 ) : AusleseTypes.Group[]
 {
-    let selected: AusleseTypes.Group = {headline: null, choices: [], header: true};
-    let result: AusleseTypes.Group[] = [];
+    const selected: AusleseTypes.Group = {headline: null, choices: [], header: true};
+    const result: AusleseTypes.Group[] = [];
 
     if ("" !== search)
     {

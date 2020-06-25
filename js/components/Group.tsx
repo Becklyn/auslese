@@ -20,7 +20,7 @@ export interface GroupProps
 
 export function Group (props: GroupProps): JSX.Element|null
 {
-    let group = props.group;
+    const group = props.group;
 
     if (!group.choices.length)
     {

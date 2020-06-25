@@ -38,7 +38,7 @@ function parseSelect (select: HTMLSelectElement) : ParseSelectResult
         selectChildren.shift();
     }
 
-    let choices: (AusleseTypes.Choice|AusleseTypes.Group)[] = selectChildren.map(
+    const choices: (AusleseTypes.Choice|AusleseTypes.Group)[] = selectChildren.map(
         element =>
         {
             return (element instanceof HTMLOptGroupElement)
@@ -99,7 +99,7 @@ function updateSelectState (
     selection: AusleseTypes.SelectedChoice[]
 ) : void
 {
-    let options = Array.from(select.options).filter(o => !o.disabled);
+    const options = Array.from(select.options).filter(o => !o.disabled);
 
     // reset all selected states
     options.forEach(o => o.selected = false);

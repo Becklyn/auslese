@@ -90,7 +90,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private static initState (props: Readonly<AusleseProps>): AusleseState
     {
-        let groups = sanitizeGroups(props.choices);
+        const groups = sanitizeGroups(props.choices);
 
         return {
             choices: props.choices,
@@ -123,24 +123,24 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     public render (props: AusleseProps, state: AusleseState): preact.ComponentChild
     {
-        let {groups, flattened, selection, type} = state;
+        const {groups, flattened, selection, type} = state;
 
         // Prepare basic data
         let selectedChoices = flattened.filter(choice => selection.get(choice));
-        let searchQuery = state.search.trim();
-        let renderGroups = buildRenderGroups(groups, selection, type, searchQuery);
-        let placeholder = props.placeholder || "Bitte wählen";
-        let isClearable = selectedChoices.some(choice => !choice.disabled);
-        let hasSearchForm = "tags" !== type && flattened.length > 5;
+        const searchQuery = state.search.trim();
+        const renderGroups = buildRenderGroups(groups, selection, type, searchQuery);
+        const placeholder = props.placeholder || "Bitte wählen";
+        const isClearable = selectedChoices.some(choice => !choice.disabled);
+        const hasSearchForm = "tags" !== type && flattened.length > 5;
         // you can reset the form if it is either multi select or if there is a placeholder
-        let canClear = "single" !== type || !!props.placeholder;
+        const canClear = "single" !== type || !!props.placeholder;
 
         let dropdownContent: preact.ComponentChildren;
 
         // if has search and no matches
         if (!renderGroups.length)
         {
-            let message = ("" !== searchQuery)
+            const message = ("" !== searchQuery)
                 ? (props.emptyResultsMessage || "Keine passenden Einträge gefunden.")
                 : (props.emptyMessage || "Keine Einträge vorhanden.");
             dropdownContent = <div class="auslese-message">{message}</div>;
@@ -224,7 +224,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         // be sure to clean up the event listener, to not have it multiple times
         document.body.removeEventListener("click", this.onBodyClickBound, false);
 
-        let dropdown = document.createElement("div");
+        const dropdown = document.createElement("div");
         dropdown.setAttribute("class", "auslese-overlay");
         this.dropdownHolder.appendChild(dropdown);
 
@@ -312,7 +312,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             return;
         }
 
-        let isSingle = ("single" === this.state.type);
+        const isSingle = ("single" === this.state.type);
 
         this.setState(
             state =>
@@ -405,8 +405,8 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             return;
         }
 
-        let base = this.base as Element;
-        let target = event.target as Element;
+        const base = this.base as Element;
+        const target = event.target as Element;
 
         if (!isChildElement(base, target) && !isChildElement(this.state.dropdown, target))
         {
@@ -445,8 +445,8 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private moveChoiceFocus (renderGroups: AusleseTypes.Group[], up: boolean): void
     {
-        let list = flattenChoices(renderGroups).filter(choice => !choice.disabled);
-        let first = list[0] || null;
+        const list = flattenChoices(renderGroups).filter(choice => !choice.disabled);
+        const first = list[0] || null;
         this.open();
 
         if (null === this.state.focus)
@@ -454,14 +454,14 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             return this.focusChoice(first, true);
         }
 
-        let index = list.indexOf(this.state.focus);
+        const index = list.indexOf(this.state.focus);
 
         if (-1 === index)
         {
             return this.focusChoice(first, true);
         }
 
-        let newIndex = index + (up ? -1 : 1);
+        const newIndex = index + (up ? -1 : 1);
 
         if (newIndex < 0)
         {
@@ -481,7 +481,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private onKeyDown (event: KeyboardEvent, renderGroups: AusleseTypes.Group[]): void
     {
-        let key = event.key.toLowerCase();
+        const key = event.key.toLowerCase();
 
         switch (key)
         {

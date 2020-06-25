@@ -19,7 +19,7 @@ export interface CurrentLabelsProps
 
 export function CurrentLabels (props: CurrentLabelsProps): JSX.Element
 {
-    let randomId = `auslese-current-tags-input-${++renderIndex}`;
+    const randomId = `auslese-current-tags-input-${++renderIndex}`;
 
     return (
         <label class="auslese-current auslese-current-tags" for={randomId}>

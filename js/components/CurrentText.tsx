@@ -13,8 +13,8 @@ interface CurrentTextProps
 
 export function CurrentText (props: CurrentTextProps): JSX.Element
 {
-    let selection = props.selected;
-    let text = selection.length
+    const selection = props.selected;
+    const text = selection.length
         ? selection.map(s => s.label).join(", ")
         : props.placeholder;
 
