@@ -2,6 +2,7 @@ dist: trusty
 language: node_js
 
 cache:
+    npm: false
     directories:
         - $HOME/.cache/Cypress
 
