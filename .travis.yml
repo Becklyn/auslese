@@ -2,7 +2,6 @@ dist: trusty
 language: node_js
 
 cache:
-    npm: false
     directories:
         - $HOME/.cache/Cypress
 
@@ -10,6 +9,7 @@ node_js:
     - 12
 
 script:
+    - ./node_modules/.bin/cypress install
     - npm run-script build
     - npm audit
     - npx prettier-package-json package.json --list-different --tab-width 4
