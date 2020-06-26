@@ -16,7 +16,7 @@
         "clean": "node .build/clean.js",
         "dev": "node_modules/.bin/tsc --noEmitOnError --noErrorTruncation --listEmittedFiles --pretty -w",
         "prepublishOnly": "npm run build",
-        "test": "npm run test:build && npm run test:project",
+        "test": "npm run test:build && npm run test:lib",
         "test:build": "ava",
         "test:lib": "node_modules/.bin/cypress run --record --key 8c940896-0fff-43aa-906f-ca1bda96d8ba",
         "test:start": "node_modules/.bin/cypress open"

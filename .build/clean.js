@@ -7,6 +7,7 @@ let compiledFiles = glob.sync("**/*.{d.ts,js}", {
     root: path.dirname(__dirname),
     ignore: [
         "@types/**/*",
+        "js/@types/**/*",
         "node_modules/**/*",
         "tests/**/*",
         "kaba.js",
