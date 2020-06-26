@@ -202,7 +202,7 @@ function updateSelectState (
 
 
 /**
- * Mount auslese on the given elements
+ * Mount auslese on the given elements, found by the selector
  */
 export function mountAuslese (selector: string, context?: Document|Element, options: AusleseMountOptions = {})
 {
@@ -214,14 +214,27 @@ export function mountAuslese (selector: string, context?: Document|Element, opti
                 return;
             }
 
-            const props = extend(parseSelect(select, options.preferred), options) as AusleseProps;
-            props.onChange = selection => updateSelectState(select, selection);
-            props.dropdownHolder = options.dropdownHolder;
-
-            render(createElement(Auslese, props), select.parentElement);
-
-            // replace all existing classes
-            select.setAttribute("class", "auslese-bound-select");
+            mountAusleseOnElement(select, options);
         }
     );
+}
+
+/**
+ * Mount auslese on the given select element
+ */
+export function mountAusleseOnElement (select: HTMLSelectElement, options: AusleseMountOptions = {}) : void
+{
+    if (!select.parentElement)
+    {
+        return;
+    }
+
+    const props = extend(parseSelect(select, options.preferred), options) as AusleseProps;
+    props.onChange = selection => updateSelectState(select, selection);
+    props.dropdownHolder = options.dropdownHolder;
+
+    render(createElement(Auslese, props), select.parentElement);
+
+    // replace all existing classes
+    select.setAttribute("class", "auslese-bound-select");
 }

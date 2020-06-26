@@ -1,3 +1,9 @@
+2.1.0
+=====
+
+*   (feature) Add `mountAusleseOnElement()`.
+
+
 2.0.3
 =====
 
