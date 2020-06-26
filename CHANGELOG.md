@@ -1,3 +1,9 @@
+2.1.1
+=====
+
+*   (improvement) Make `mountAusleseOnElement()` easier to use by just ignoring non-`select` elements.
+
+
 2.1.0
 =====
 

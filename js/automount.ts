@@ -222,9 +222,9 @@ export function mountAuslese (selector: string, context?: Document|Element, opti
 /**
  * Mount auslese on the given select element
  */
-export function mountAusleseOnElement (select: HTMLSelectElement, options: AusleseMountOptions = {}) : void
+export function mountAusleseOnElement (select: HTMLElement, options: AusleseMountOptions = {}) : void
 {
-    if (!select.parentElement)
+    if (!(select instanceof HTMLSelectElement) || !select.parentElement)
     {
         return;
     }
