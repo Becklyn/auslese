@@ -5,6 +5,12 @@ import {AusleseTypes} from "./@types/auslese";
 import {Auslese, AusleseProps} from "./Auslese";
 
 
+interface PreferredGroupOptions
+{
+    headline?: string;
+    after?: string;
+}
+
 interface AusleseMountOptions
 {
     placeholder?: string;
@@ -12,7 +18,10 @@ interface AusleseMountOptions
     emptyMessage?: string;
     resetText?: string;
     dropdownHolder?: HTMLElement;
-    preferredHeadline?: string;
+    /**
+     * The headline of the preferred group + the one after it
+     */
+    preferred?: PreferredGroupOptions;
 }
 
 
@@ -24,6 +33,16 @@ function isPreferredMarker (element: HTMLOptionElement) : boolean
     return element.disabled && element.value === "-------------------";
 }
 
+/**
+ * Sets the group headline without overwriting an existing one.
+ */
+function safeSetGroupHeadline (group: AusleseTypes.Group, headline?: string|null) : void
+{
+    if (null === group.headline && headline)
+    {
+        group.headline = headline;
+    }
+}
 
 /**
  * Parses the options from the select
@@ -32,7 +51,7 @@ function isPreferredMarker (element: HTMLOptionElement) : boolean
  */
 export function parseSelect (
     select: HTMLSelectElement,
-    preferredLabel?: string
+    preferred?: PreferredGroupOptions
 ) : AusleseProps
 {
     const selectChildren = children<HTMLOptionElement|HTMLOptGroupElement>(select);
@@ -42,6 +61,7 @@ export function parseSelect (
     let foundPreferredMarker = false;
     const choices: AusleseTypes.Group[] = [];
 
+    let nextGroupMergeHeadline: string|null = null;
     let lastGroup: AusleseTypes.Group|null = null;
 
     if (firstChild instanceof HTMLOptionElement && "" === firstChild.value)
@@ -66,9 +86,12 @@ export function parseSelect (
 
                 if (lastGroup !== null)
                 {
+                    safeSetGroupHeadline(lastGroup, nextGroupMergeHeadline);
                     choices.push(lastGroup);
                     lastGroup = null;
                 }
+
+                nextGroupMergeHeadline = null;
 
                 // push the group as new group
                 choices.push({
@@ -100,11 +123,10 @@ export function parseSelect (
                 // if there is a last group, push it as
                 if (null !== lastGroup)
                 {
-                    if (null === lastGroup.headline)
-                    {
-                        lastGroup.headline = preferredLabel || "Preferred Options";
-                    }
+                    const headline = preferred ? preferred.headline : null;
+                    safeSetGroupHeadline(lastGroup, headline || "Preferred Options");
 
+                    nextGroupMergeHeadline = preferred ? (preferred.after || null) : null;
                     choices.push(lastGroup);
                     lastGroup = null;
                 }
@@ -128,6 +150,7 @@ export function parseSelect (
 
     if (null !== lastGroup)
     {
+        safeSetGroupHeadline(lastGroup, nextGroupMergeHeadline);
         choices.push(lastGroup);
     }
 
@@ -191,7 +214,7 @@ export function mountAuslese (selector: string, context?: Document|Element, opti
                 return;
             }
 
-            const props = extend(parseSelect(select, options.preferredHeadline), options) as AusleseProps;
+            const props = extend(parseSelect(select, options.preferred), options) as AusleseProps;
             props.onChange = selection => updateSelectState(select, selection);
             props.dropdownHolder = options.dropdownHolder;
 

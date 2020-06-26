@@ -227,15 +227,171 @@ describe('parseSelect() Tests', () => {
         <select multiple>
             <option value="a">test1</option>
             <option disabled>-------------------</option>
+            <option value="b">test2</option>
         </select>
         `);
 
-        const props = parseSelect(select, "custom preferred label");
+        const props = parseSelect(select, {
+            headline: "custom preferred label",
+        });
         expect(props.choices).to.eql([
             {
                 headline: "custom preferred label",
                 choices: [
                     {label: "test1", value: "a", disabled: false},
+                ]
+            },
+            {
+                headline: null,
+                choices: [
+                    {label: "test2", value: "b", disabled: false},
+                ]
+            },
+        ]);
+        expect(props.selection).to.eql({});
+    });
+
+
+    it('use passed preferred + all label (all is last)', () =>
+    {
+        const select = createSelect(`
+        <select multiple>
+            <option value="a">test1</option>
+            <option disabled>-------------------</option>
+            <option value="b">test2</option>
+        </select>
+        `);
+
+        const props = parseSelect(select, {
+            headline: "custom preferred label",
+            after: "after preferred"
+        });
+        expect(props.choices).to.eql([
+            {
+                headline: "custom preferred label",
+                choices: [
+                    {label: "test1", value: "a", disabled: false},
+                ]
+            },
+            {
+                headline: "after preferred",
+                choices: [
+                    {label: "test2", value: "b", disabled: false},
+                ]
+            },
+        ]);
+        expect(props.selection).to.eql({});
+    });
+
+
+    it('use passed preferred + all label (all is not last)', () =>
+    {
+        const select = createSelect(`
+        <select multiple>
+            <option value="a">test1</option>
+            <option disabled>-------------------</option>
+            <option value="b">test2</option>
+            <optgroup label="Group">
+                <option value="c">test3</option>
+            </optgroup>
+        </select>
+        `);
+
+        const props = parseSelect(select, {
+            headline: "custom preferred label",
+            after: "after preferred"
+        });
+        expect(props.choices).to.eql([
+            {
+                headline: "custom preferred label",
+                choices: [
+                    {label: "test1", value: "a", disabled: false},
+                ]
+            },
+            {
+                headline: "after preferred",
+                choices: [
+                    {label: "test2", value: "b", disabled: false},
+                ]
+            },
+            {
+                headline: "Group",
+                choices: [
+                    {label: "test3", value: "c", disabled: false},
+                ]
+            },
+        ]);
+        expect(props.selection).to.eql({});
+    });
+
+
+    it('use passed preferred + all even with empty optgroup label', () =>
+    {
+        const select = createSelect(`
+        <select multiple>
+            <option value="a">test1</option>
+            <option disabled>-------------------</option>
+            <optgroup label=""></optgroup>
+            <option value="b">test2</option>
+        </select>
+        `);
+
+        const props = parseSelect(select, {
+            headline: "custom preferred label",
+            after: "after preferred"
+        });
+        expect(props.choices).to.eql([
+            {
+                headline: "custom preferred label",
+                choices: [
+                    {label: "test1", value: "a", disabled: false},
+                ]
+            },
+            {
+                headline: "after preferred",
+                choices: [
+                    {label: "test2", value: "b", disabled: false},
+                ]
+            },
+        ]);
+        expect(props.selection).to.eql({});
+    });
+
+
+    it('all should only be used if it\'s not a group and then forgotten', () =>
+    {
+        const select = createSelect(`
+        <select multiple>
+            <option value="a">test1</option>
+            <option disabled>-------------------</option>
+            <optgroup label="Group">
+                <option value="c">test3</option>
+            </optgroup>
+            <option value="b">test2</option>
+        </select>
+        `);
+
+        const props = parseSelect(select, {
+            headline: "custom preferred label",
+            after: "after preferred"
+        });
+        expect(props.choices).to.eql([
+            {
+                headline: "custom preferred label",
+                choices: [
+                    {label: "test1", value: "a", disabled: false},
+                ]
+            },
+            {
+                headline: "Group",
+                choices: [
+                    {label: "test3", value: "c", disabled: false},
+                ]
+            },
+            {
+                headline: null,
+                choices: [
+                    {label: "test2", value: "b", disabled: false},
                 ]
             },
         ]);
@@ -263,7 +419,7 @@ describe('parseSelect() Tests', () => {
         </select>
         `);
 
-        const props = parseSelect(select, "pref");
+        const props = parseSelect(select);
         expect(props.choices).to.eql([
             {
                 headline: "Group 1",
@@ -273,7 +429,7 @@ describe('parseSelect() Tests', () => {
                 ]
             },
             {
-                headline: "pref",
+                headline: "Preferred Options",
                 choices: [
                     {label: "test1", value: "1", disabled: false},
                     {label: "test2", value: "2", disabled: false},
@@ -339,7 +495,7 @@ describe('parseSelect() Tests', () => {
         </select>
         `);
 
-        const props = parseSelect(select, "pref");
+        const props = parseSelect(select);
         expect(props.choices).to.eql([
             {
                 headline: null,
@@ -369,7 +525,7 @@ describe('parseSelect() Tests', () => {
         </select>
         `);
 
-        const props = parseSelect(select, "pref");
+        const props = parseSelect(select);
         expect(props.choices).to.eql([
             {
                 headline: null,

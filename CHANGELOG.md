@@ -1,3 +1,10 @@
+2.0.3
+=====
+
+*   (bug) Fix key + type of `mountAuslese` options `config.preferred` value.
+*   (improvement) Also add headline for the list after the "preferred" choices. 
+
+
 2.0.2
 =====
 
