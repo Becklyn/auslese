@@ -7,3 +7,4 @@
 *.js
 !/js/@types/*.d.ts
 !/tests/**/*.js
+!/.build/*.js

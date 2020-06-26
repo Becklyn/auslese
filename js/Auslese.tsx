@@ -9,17 +9,15 @@ import {
     buildRenderGroups,
     flattenChoices,
     isChildElement,
-    sanitizeGroups,
 } from "./lib/helper";
 import {ChevronIcon} from "./lib/icons";
 
 
 export interface AusleseProps
 {
-    choices: (AusleseTypes.Group | AusleseTypes.Choice)[];
+    choices: AusleseTypes.Group[];
     type?: AusleseTypes.SelectionType;
-    selections?: WeakMap<AusleseTypes.Choice, boolean>;
-    onChange?: (selection: AusleseTypes.SelectedChoice[]) => void;
+    onChange?: (selection: Readonly<AusleseTypes.Selection>) => void;
     dropdownHolder?: HTMLElement;
     dropdownClass?: string|null;
     class?: string|null;
@@ -27,18 +25,18 @@ export interface AusleseProps
     emptyResultsMessage?: string;
     emptyMessage?: string;
     resetText?: string;
+    selection?: AusleseTypes.Selection;
 }
 
 
 export interface AusleseState
 {
-    choices: (AusleseTypes.Choice|AusleseTypes.Group)[];
-    groups: AusleseTypes.Group[];
+    choices: AusleseTypes.Group[];
     flattened: AusleseTypes.Choice[];
     type: AusleseTypes.SelectionType;
     dropdown: HTMLElement|null;
     search: string;
-    selection: WeakMap<AusleseTypes.Choice, boolean>
+    selection: AusleseTypes.Selection;
     loading: boolean;
     focus: AusleseTypes.Choice | null;
 }
@@ -90,13 +88,10 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private static initState (props: Readonly<AusleseProps>): AusleseState
     {
-        let groups = sanitizeGroups(props.choices);
-
         return {
             choices: props.choices,
-            groups: groups,
-            flattened: flattenChoices(groups),
-            selection: props.selections || new WeakMap<AusleseTypes.Choice, boolean>(),
+            flattened: flattenChoices(props.choices),
+            selection: props.selection || {},
             dropdown: null,
             search: "",
             type: props.type || "single",
@@ -123,24 +118,24 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     public render (props: AusleseProps, state: AusleseState): preact.ComponentChild
     {
-        let {groups, flattened, selection, type} = state;
+        const {choices, flattened, selection, type} = state;
 
         // Prepare basic data
-        let selectedChoices = flattened.filter(choice => selection.get(choice));
-        let searchQuery = state.search.trim();
-        let renderGroups = buildRenderGroups(groups, selection, type, searchQuery);
-        let placeholder = props.placeholder || "Bitte wählen";
-        let isClearable = selectedChoices.some(choice => !choice.disabled);
-        let hasSearchForm = "tags" !== type && flattened.length > 5;
+        const selectedChoices = flattened.filter(choice => selection[choice.value]);
+        const searchQuery = state.search.trim();
+        const renderGroups = buildRenderGroups(choices, selection, type, searchQuery);
+        const placeholder = props.placeholder || "Bitte wählen";
+        const isClearable = selectedChoices.some(choice => !choice.disabled);
+        const hasSearchForm = "tags" !== type && flattened.length > 5;
         // you can reset the form if it is either multi select or if there is a placeholder
-        let canClear = "single" !== type || !!props.placeholder;
+        const canClear = "single" !== type || !!props.placeholder;
 
         let dropdownContent: preact.ComponentChildren;
 
         // if has search and no matches
         if (!renderGroups.length)
         {
-            let message = ("" !== searchQuery)
+            const message = ("" !== searchQuery)
                 ? (props.emptyResultsMessage || "Keine passenden Einträge gefunden.")
                 : (props.emptyMessage || "Keine Einträge vorhanden.");
             dropdownContent = <div class="auslese-message">{message}</div>;
@@ -150,7 +145,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             dropdownContent = renderGroups.map(group => (
                 <Group
                     group={group}
-                    selections={selection}
+                    selection={selection}
                     onToggle={choice => this.toggleChoice(choice)}
                     onMouseEnter={choice => this.focusChoice(choice, false)}
                     focus={state.focus}
@@ -224,7 +219,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         // be sure to clean up the event listener, to not have it multiple times
         document.body.removeEventListener("click", this.onBodyClickBound, false);
 
-        let dropdown = document.createElement("div");
+        const dropdown = document.createElement("div");
         dropdown.setAttribute("class", "auslese-overlay");
         this.dropdownHolder.appendChild(dropdown);
 
@@ -270,35 +265,26 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     {
         event.stopPropagation();
 
-        this.setState({
-                selection: this.clearSelection(),
-            }, () => this.emitUpdate(),
+        this.setState(
+            {selection: this.createEmptySelection()},
+            () => this.emitUpdate()
         );
     }
 
-
-    /**
-     * Creates a cleared selection element, that only contains the always selected elements
-     */
-    private clearSelection (): WeakMap<AusleseTypes.Choice, boolean>
+    private createEmptySelection (): AusleseTypes.Selection
     {
-        let newSelections = new WeakMap<AusleseTypes.Choice, boolean>();
-        let {groups, type, selection} = this.state;
+        const empty: AusleseTypes.Selection = {};
+        const {flattened, selection} = this.state;
 
-        if ("single" !== type)
-        {
-            flattenChoices(groups).forEach(
-                choice =>
-                {
-                    if (selection.get(choice) && choice.disabled)
-                    {
-                        newSelections.set(choice, true);
-                    }
-                },
-            );
-        }
+        flattened.forEach(choice => {
+            // keep disabled selected choices
+            if (choice.disabled && selection[choice.value])
+            {
+                empty[choice.value] = true;
+            }
+        });
 
-        return newSelections;
+        return empty;
     }
 
 
@@ -307,35 +293,52 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private toggleChoice (choice: AusleseTypes.Choice): void
     {
+        const value = choice.value;
+
         if (choice.disabled)
         {
             return;
         }
 
-        let isSingle = ("single" === this.state.type);
+        const isSingle = ("single" === this.state.type);
 
         this.setState(
             state =>
             {
-                let selection = state.selection;
+                const old = state.selection;
+                const newSelection: AusleseTypes.Selection = this.createEmptySelection();
 
                 if (isSingle)
                 {
-                    selection = this.clearSelection();
-                    selection.set(choice, true);
+                    // single -> just always enable this option
+                    newSelection[value] = true;
                 }
                 else
                 {
-                    selection.set(choice, !selection.get(choice));
+                    // multiple -> copy all true values except the on changed
+                    for (const key in old)
+                    {
+                        if (key !== value && old[key])
+                        {
+                            newSelection[key] = true;
+                        }
+                    }
+
+                    // set the new key, if it wasn't active before (to toggle it)
+                    if (!old[value])
+                    {
+                        newSelection[value] = true;
+                    }
                 }
 
                 return {
-                    selection,
+                    selection: newSelection,
                     search: "",
                     focus: null,
                 };
             },
-            () => {
+            () =>
+            {
                 this.emitUpdate();
 
                 if (isSingle)
@@ -354,19 +357,8 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     {
         if (this.props.onChange)
         {
-            let update = this.getSelected().map(
-                choice =>
-                {
-                    return {
-                        choice: choice,
-                        toggle: !choice.disabled
-                            ? () => this.toggleChoice(choice)
-                            : undefined,
-                    };
-                },
-            );
 
-            this.props.onChange(update);
+            this.props.onChange(this.state.selection);
         }
     }
 
@@ -405,8 +397,8 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             return;
         }
 
-        let base = this.base as Element;
-        let target = event.target as Element;
+        const base = this.base as Element;
+        const target = event.target as Element;
 
         if (!isChildElement(base, target) && !isChildElement(this.state.dropdown, target))
         {
@@ -445,8 +437,8 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private moveChoiceFocus (renderGroups: AusleseTypes.Group[], up: boolean): void
     {
-        let list = flattenChoices(renderGroups).filter(choice => !choice.disabled);
-        let first = list[0] || null;
+        const list = flattenChoices(renderGroups).filter(choice => !choice.disabled);
+        const first = list[0] || null;
         this.open();
 
         if (null === this.state.focus)
@@ -454,14 +446,14 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             return this.focusChoice(first, true);
         }
 
-        let index = list.indexOf(this.state.focus);
+        const index = list.indexOf(this.state.focus);
 
         if (-1 === index)
         {
             return this.focusChoice(first, true);
         }
 
-        let newIndex = index + (up ? -1 : 1);
+        const newIndex = index + (up ? -1 : 1);
 
         if (newIndex < 0)
         {
@@ -481,7 +473,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private onKeyDown (event: KeyboardEvent, renderGroups: AusleseTypes.Group[]): void
     {
-        let key = event.key.toLowerCase();
+        const key = event.key.toLowerCase();
 
         switch (key)
         {
@@ -512,14 +504,5 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                 event.preventDefault();
                 break;
         }
-    }
-
-
-    /**
-     * Returns the selected choices
-     */
-    private getSelected (): AusleseTypes.Choice[]
-    {
-        return this.state.flattened.filter(choice => this.state.selection.get(choice));
     }
 }

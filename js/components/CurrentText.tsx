@@ -1,6 +1,7 @@
 import {classes} from "mojave/classes";
 import {h} from "preact";
 import {AusleseTypes} from "../@types/auslese";
+import {filterDuplicateChoices} from "../lib/helper";
 import JSX = preact.createElement.JSX;
 
 
@@ -13,9 +14,9 @@ interface CurrentTextProps
 
 export function CurrentText (props: CurrentTextProps): JSX.Element
 {
-    let selection = props.selected;
-    let text = selection.length
-        ? selection.map(s => s.label).join(", ")
+    const selection = props.selected;
+    const text = selection.length
+        ? filterDuplicateChoices(selection).map(s => s.label).join(", ")
         : props.placeholder;
 
     return (

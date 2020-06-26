@@ -9,7 +9,7 @@ import JSX = preact.createElement.JSX;
 export interface GroupProps
 {
     group: AusleseTypes.Group;
-    selections: WeakMap<AusleseTypes.Choice, boolean>;
+    selection: AusleseTypes.Selection;
     onToggle: (choice: AusleseTypes.Choice) => void;
     onMouseEnter: (choice: AusleseTypes.Choice) => void;
     focus: AusleseTypes.Choice|null;
@@ -20,7 +20,7 @@ export interface GroupProps
 
 export function Group (props: GroupProps): JSX.Element|null
 {
-    let group = props.group;
+    const group = props.group;
 
     if (!group.choices.length)
     {
@@ -41,7 +41,7 @@ export function Group (props: GroupProps): JSX.Element|null
                 {group.choices.map(choice => (
                     <Choice
                         label={choice.label}
-                        selected={!!props.selections.get(choice)}
+                        selected={props.selection[choice.value]}
                         disabled={!!choice.disabled}
                         focus={props.focus === choice}
                         onToggle={() => props.onToggle(choice)}

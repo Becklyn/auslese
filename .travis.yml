@@ -1,6 +1,10 @@
 dist: trusty
 language: node_js
 
+cache:
+    directories:
+        - $HOME/.cache/Cypress
+
 node_js:
     - 12
 

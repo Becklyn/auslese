@@ -1,11 +1,14 @@
 .DS_Store
+/.build
 /.circleci
 /.github
 /.idea
 /.travis.yml
 /.vscode
+/cypress.json
 /tests
 /tsconfig.json
+/web
 
 # ignore all .ts when publishing
 *.ts
