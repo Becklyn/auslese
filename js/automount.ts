@@ -5,12 +5,6 @@ import {AusleseTypes} from "./@types/auslese";
 import {Auslese, AusleseProps} from "./Auslese";
 
 
-interface ParseSelectResult
-{
-    mapping: WeakMap<AusleseTypes.Choice, HTMLOptionElement>;
-    props: AusleseProps;
-}
-
 interface AusleseMountOptions
 {
     placeholder?: string;
@@ -18,19 +12,37 @@ interface AusleseMountOptions
     emptyMessage?: string;
     resetText?: string;
     dropdownHolder?: HTMLElement;
+    preferredHeadline?: string;
+}
+
+
+/**
+ * Returns whether the given option is the "preferred" marker
+ */
+function isPreferredMarker (element: HTMLOptionElement) : boolean
+{
+    return element.disabled && element.value === "-------------------";
 }
 
 
 /**
  * Parses the options from the select
+ *
+ * @internal
  */
-function parseSelect (select: HTMLSelectElement) : ParseSelectResult
+export function parseSelect (
+    select: HTMLSelectElement,
+    preferredLabel?: string
+) : AusleseProps
 {
-    let selections = new WeakMap<AusleseTypes.Choice, boolean>();
-    let mapping = new WeakMap<AusleseTypes.Choice, HTMLOptionElement>();
-    let selectChildren = children<HTMLOptionElement|HTMLOptGroupElement>(select);
-    let firstChild = selectChildren[0];
+    const selectChildren = children<HTMLOptionElement|HTMLOptGroupElement>(select);
+    const firstChild = selectChildren[0];
+    const selection: AusleseTypes.Selection = {};
     let placeholder = select.dataset.placeholder;
+    let foundPreferredMarker = false;
+    const choices: AusleseTypes.Group[] = [];
+
+    let lastGroup: AusleseTypes.Group|null = null;
 
     if (firstChild instanceof HTMLOptionElement && "" === firstChild.value)
     {
@@ -38,29 +50,95 @@ function parseSelect (select: HTMLSelectElement) : ParseSelectResult
         selectChildren.shift();
     }
 
-    const choices: (AusleseTypes.Choice|AusleseTypes.Group)[] = selectChildren.map(
+
+    selectChildren.forEach(
         element =>
         {
-            return (element instanceof HTMLOptGroupElement)
-                ? {
-                    headline: element.label,
-                    choices: children<HTMLOptionElement>(element).map(option => parseOption(option, selections, mapping)),
+            if (element instanceof HTMLOptGroupElement)
+            {
+                const groupElements = children<HTMLOptionElement>(element);
+
+                // skip empty groups
+                if (!groupElements.length)
+                {
+                    return;
                 }
-                : parseOption(element, selections, mapping);
+
+                if (lastGroup !== null)
+                {
+                    choices.push(lastGroup);
+                    lastGroup = null;
+                }
+
+                // push the group as new group
+                choices.push({
+                    headline: element.label,
+                    choices: groupElements.map(option => {
+                        if (option.selected)
+                        {
+                            selection[option.value] = true;
+                        }
+
+                        return parseOption(option);
+                    }),
+                });
+
+                return;
+            }
+
+            // check for "preferred values" placeholder
+            if (isPreferredMarker(element))
+            {
+                // if this is the second "preferred" marker
+                if (foundPreferredMarker)
+                {
+                    throw new Error("Multiple preferred markers found");
+                }
+
+                foundPreferredMarker = true;
+
+                // if there is a last group, push it as
+                if (null !== lastGroup)
+                {
+                    if (null === lastGroup.headline)
+                    {
+                        lastGroup.headline = preferredLabel || "Preferred Options";
+                    }
+
+                    choices.push(lastGroup);
+                    lastGroup = null;
+                }
+
+                return;
+            }
+
+            if (null === lastGroup)
+            {
+                lastGroup = {headline: null, choices: []};
+            }
+
+            if (element.selected)
+            {
+                selection[element.value] = true;
+            }
+
+            lastGroup.choices.push(parseOption(element));
         }
     );
 
+    if (null !== lastGroup)
+    {
+        choices.push(lastGroup);
+    }
+
     return {
-        mapping: mapping,
-        props: {
-            class: select.getAttribute("class"),
-            choices: choices,
-            selections: selections,
-            placeholder: placeholder,
-            type: select.multiple
-                ? ("tags" === select.dataset.auslese ? "tags" : "multiple")
-                : "single",
-        },
+        class: select.getAttribute("class"),
+        choices,
+        selection,
+        placeholder,
+        type: select.multiple
+            ? ("tags" === select.dataset.auslese ? "tags" : "multiple")
+            : "single",
     };
 }
 
@@ -68,53 +146,35 @@ function parseSelect (select: HTMLSelectElement) : ParseSelectResult
 /**
  * Parses a single <option> tag
  */
-function parseOption (
-    option: HTMLOptionElement,
-    selections: WeakMap<AusleseTypes.Choice, boolean>,
-    mapping: WeakMap<AusleseTypes.Choice, HTMLOptionElement>
-) : AusleseTypes.Choice
+function parseOption (option: HTMLOptionElement) : AusleseTypes.Choice
 {
-    let choice = {
+    if (isPreferredMarker(option))
+    {
+        throw new Error("Found invalid preferred marker");
+    }
+
+    return {
         label: option.textContent || "",
         value: option.value,
         disabled: option.disabled,
     };
-
-    mapping.set(choice, option);
-
-    if (option.selected)
-    {
-        selections.set(choice, true);
-    }
-
-    return choice;
 }
+
 
 /**
  * Updates the bound select
  */
 function updateSelectState (
     select: HTMLSelectElement,
-    mapping: WeakMap<AusleseTypes.Choice, HTMLOptionElement>,
-    selection: AusleseTypes.SelectedChoice[]
+    selection: AusleseTypes.Selection
 ) : void
 {
     const options = Array.from(select.options).filter(o => !o.disabled);
 
     // reset all selected states
-    options.forEach(o => o.selected = false);
-
-    selection.forEach(
-        entry =>
-        {
-            let option = mapping.get(entry.choice);
-
-            if (option)
-            {
-                option.selected = true;
-            }
-        }
-    );
+    options.forEach(option => {
+        option.selected = selection[option.value];
+    });
 }
 
 
@@ -126,20 +186,16 @@ export function mountAuslese (selector: string, context?: Document|Element, opti
     (context || document).querySelectorAll(selector).forEach(
         select =>
         {
-            if (!(select instanceof HTMLSelectElement))
+            if (!(select instanceof HTMLSelectElement) || !select.parentElement)
             {
                 return;
             }
 
-            let data = parseSelect(select);
-            data.props = extend(data.props, options) as AusleseProps;
-            data.props.onChange = selection => updateSelectState(select, data.mapping, selection);
-            data.props.dropdownHolder = options.dropdownHolder;
+            const props = extend(parseSelect(select, options.preferredHeadline), options) as AusleseProps;
+            props.onChange = selection => updateSelectState(select, selection);
+            props.dropdownHolder = options.dropdownHolder;
 
-            render(
-                createElement(Auslese, data.props),
-                select.parentElement as Element
-            );
+            render(createElement(Auslese, props), select.parentElement);
 
             // replace all existing classes
             select.setAttribute("class", "auslese-bound-select");

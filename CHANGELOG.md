@@ -1,3 +1,14 @@
+2.0.0
+=====
+
+*   (bc) `<Auslese>` now only accepts `Group`s as `choices`.
+*   (bc) Refactored selections to just use a value map, instead of a actual reference map (via `Weakmap`).
+*   (feature) Automounting now correctly handles preferred choices.
+*   (feature) Added proper support for duplicate values (which can occur for preferred choices).
+*   (improvement) Added `preferredHeadline` automount option, to set the headline of the "preferred choices" group.
+
+
+
 1.1.8
 =====
 

@@ -26,7 +26,7 @@ export function isChildElement (parent: Node, node: Node) : boolean
  */
 export function buildRenderGroups (
     groups: AusleseTypes.Group[],
-    selections: AusleseTypes.Selections,
+    selections: AusleseTypes.Selection,
     type: AusleseTypes.SelectionType,
     search: string
 ) : AusleseTypes.Group[]
@@ -36,7 +36,7 @@ export function buildRenderGroups (
 
     if ("" !== search)
     {
-        let filtered = matchSorter(flattenChoices(groups), search, {keys: ["label"]});
+        const filtered = matchSorter(flattenChoices(groups), search, {keys: ["label"]});
 
         return filtered.length
             ? [{headline: null, choices: filtered}]
@@ -51,7 +51,7 @@ export function buildRenderGroups (
             group.choices.forEach(
                 choice =>
                 {
-                    let list = (selections.get(choice) && "multiple" === type)
+                    let list = (choice.value && selections[choice.value] && "multiple" === type)
                         ? selected
                         : transformed;
 
@@ -68,6 +68,7 @@ export function buildRenderGroups (
 
     if (selected.choices.length)
     {
+        selected.choices = filterDuplicateChoices(selected.choices);
         result.unshift(selected);
     }
 
@@ -92,6 +93,8 @@ export function flattenChoices (groups: AusleseTypes.Group[]) : AusleseTypes.Cho
 
 /**
  * Prepares the mixed choices + groups to just be groups
+ *
+ * @deprecated move this to automount and only allow groups from now on
  */
 export function sanitizeGroups (unsorted: (AusleseTypes.Choice|AusleseTypes.Group)[]) : AusleseTypes.Group[]
 {
@@ -127,4 +130,36 @@ export function sanitizeGroups (unsorted: (AusleseTypes.Choice|AusleseTypes.Grou
     }
 
     return groups;
+}
+
+/**
+ * Filters duplicate choices in the choice list
+ */
+export function filterDuplicateChoices (choices: AusleseTypes.Choice[]) : AusleseTypes.Choice[]
+{
+    const map: Record<string, Record<string, AusleseTypes.Choice>> = {};
+
+    choices.forEach(choice => {
+        if (!map[choice.value])
+        {
+            map[choice.value] = {};
+        }
+
+        // always keep the first one, to keep the relative order
+        if (!map[choice.value][choice.label])
+        {
+            map[choice.value][choice.label] = choice;
+        }
+    })
+
+    const filtered: AusleseTypes.Choice[] = [];
+    for (const value in map)
+    {
+        for (const label in map[value])
+        {
+            filtered.push(map[value][label]);
+        }
+    }
+
+    return filtered;
 }

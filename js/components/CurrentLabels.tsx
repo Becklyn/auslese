@@ -1,5 +1,6 @@
 import {h} from "preact";
 import {AusleseTypes} from "../@types/auslese";
+import {filterDuplicateChoices} from "../lib/helper";
 import {DeleteIcon} from "../lib/icons";
 import JSX = preact.createElement.JSX;
 
@@ -23,7 +24,7 @@ export function CurrentLabels (props: CurrentLabelsProps): JSX.Element
 
     return (
         <label class="auslese-current auslese-current-tags" for={randomId}>
-            {props.choices.map(choice => (
+            {filterDuplicateChoices(props.choices).map(choice => (
                 <span class="auslese-tag">
                     <span class="auslese-tag-label">{choice.label}</span>
                     {!choice.disabled && (

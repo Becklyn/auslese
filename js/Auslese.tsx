@@ -9,17 +9,15 @@ import {
     buildRenderGroups,
     flattenChoices,
     isChildElement,
-    sanitizeGroups,
 } from "./lib/helper";
 import {ChevronIcon} from "./lib/icons";
 
 
 export interface AusleseProps
 {
-    choices: (AusleseTypes.Group | AusleseTypes.Choice)[];
+    choices: AusleseTypes.Group[];
     type?: AusleseTypes.SelectionType;
-    selections?: WeakMap<AusleseTypes.Choice, boolean>;
-    onChange?: (selection: AusleseTypes.SelectedChoice[]) => void;
+    onChange?: (selection: Readonly<AusleseTypes.Selection>) => void;
     dropdownHolder?: HTMLElement;
     dropdownClass?: string|null;
     class?: string|null;
@@ -27,18 +25,18 @@ export interface AusleseProps
     emptyResultsMessage?: string;
     emptyMessage?: string;
     resetText?: string;
+    selection?: AusleseTypes.Selection;
 }
 
 
 export interface AusleseState
 {
-    choices: (AusleseTypes.Choice|AusleseTypes.Group)[];
-    groups: AusleseTypes.Group[];
+    choices: AusleseTypes.Group[];
     flattened: AusleseTypes.Choice[];
     type: AusleseTypes.SelectionType;
     dropdown: HTMLElement|null;
     search: string;
-    selection: WeakMap<AusleseTypes.Choice, boolean>
+    selection: AusleseTypes.Selection;
     loading: boolean;
     focus: AusleseTypes.Choice | null;
 }
@@ -90,13 +88,10 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private static initState (props: Readonly<AusleseProps>): AusleseState
     {
-        const groups = sanitizeGroups(props.choices);
-
         return {
             choices: props.choices,
-            groups: groups,
-            flattened: flattenChoices(groups),
-            selection: props.selections || new WeakMap<AusleseTypes.Choice, boolean>(),
+            flattened: flattenChoices(props.choices),
+            selection: props.selection || {},
             dropdown: null,
             search: "",
             type: props.type || "single",
@@ -123,12 +118,12 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     public render (props: AusleseProps, state: AusleseState): preact.ComponentChild
     {
-        const {groups, flattened, selection, type} = state;
+        const {choices, flattened, selection, type} = state;
 
         // Prepare basic data
-        let selectedChoices = flattened.filter(choice => selection.get(choice));
+        const selectedChoices = flattened.filter(choice => selection[choice.value]);
         const searchQuery = state.search.trim();
-        const renderGroups = buildRenderGroups(groups, selection, type, searchQuery);
+        const renderGroups = buildRenderGroups(choices, selection, type, searchQuery);
         const placeholder = props.placeholder || "Bitte wählen";
         const isClearable = selectedChoices.some(choice => !choice.disabled);
         const hasSearchForm = "tags" !== type && flattened.length > 5;
@@ -150,7 +145,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             dropdownContent = renderGroups.map(group => (
                 <Group
                     group={group}
-                    selections={selection}
+                    selection={selection}
                     onToggle={choice => this.toggleChoice(choice)}
                     onMouseEnter={choice => this.focusChoice(choice, false)}
                     focus={state.focus}
@@ -270,35 +265,26 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     {
         event.stopPropagation();
 
-        this.setState({
-                selection: this.clearSelection(),
-            }, () => this.emitUpdate(),
+        this.setState(
+            {selection: this.createEmptySelection()},
+            () => this.emitUpdate()
         );
     }
 
-
-    /**
-     * Creates a cleared selection element, that only contains the always selected elements
-     */
-    private clearSelection (): WeakMap<AusleseTypes.Choice, boolean>
+    private createEmptySelection (): AusleseTypes.Selection
     {
-        let newSelections = new WeakMap<AusleseTypes.Choice, boolean>();
-        let {groups, type, selection} = this.state;
+        const empty: AusleseTypes.Selection = {};
+        const {flattened, selection} = this.state;
 
-        if ("single" !== type)
-        {
-            flattenChoices(groups).forEach(
-                choice =>
-                {
-                    if (selection.get(choice) && choice.disabled)
-                    {
-                        newSelections.set(choice, true);
-                    }
-                },
-            );
-        }
+        flattened.forEach(choice => {
+            // keep disabled selected choices
+            if (choice.disabled && selection[choice.value])
+            {
+                empty[choice.value] = true;
+            }
+        });
 
-        return newSelections;
+        return empty;
     }
 
 
@@ -307,6 +293,8 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private toggleChoice (choice: AusleseTypes.Choice): void
     {
+        const value = choice.value;
+
         if (choice.disabled)
         {
             return;
@@ -317,25 +305,40 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         this.setState(
             state =>
             {
-                let selection = state.selection;
+                const old = state.selection;
+                const newSelection: AusleseTypes.Selection = this.createEmptySelection();
 
                 if (isSingle)
                 {
-                    selection = this.clearSelection();
-                    selection.set(choice, true);
+                    // single -> just always enable this option
+                    newSelection[value] = true;
                 }
                 else
                 {
-                    selection.set(choice, !selection.get(choice));
+                    // multiple -> copy all true values except the on changed
+                    for (const key in old)
+                    {
+                        if (key !== value && old[key])
+                        {
+                            newSelection[key] = true;
+                        }
+                    }
+
+                    // set the new key, if it wasn't active before (to toggle it)
+                    if (!old[value])
+                    {
+                        newSelection[value] = true;
+                    }
                 }
 
                 return {
-                    selection,
+                    selection: newSelection,
                     search: "",
                     focus: null,
                 };
             },
-            () => {
+            () =>
+            {
                 this.emitUpdate();
 
                 if (isSingle)
@@ -354,19 +357,8 @@ export class Auslese extends Component<AusleseProps, AusleseState>
     {
         if (this.props.onChange)
         {
-            let update = this.getSelected().map(
-                choice =>
-                {
-                    return {
-                        choice: choice,
-                        toggle: !choice.disabled
-                            ? () => this.toggleChoice(choice)
-                            : undefined,
-                    };
-                },
-            );
 
-            this.props.onChange(update);
+            this.props.onChange(this.state.selection);
         }
     }
 
@@ -512,14 +504,5 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                 event.preventDefault();
                 break;
         }
-    }
-
-
-    /**
-     * Returns the selected choices
-     */
-    private getSelected (): AusleseTypes.Choice[]
-    {
-        return this.state.flattened.filter(choice => this.state.selection.get(choice));
     }
 }

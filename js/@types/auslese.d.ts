@@ -1,4 +1,4 @@
-export declare namespace AusleseTypes
+export module AusleseTypes
 {
     export type SelectionType = "single" | "multiple" | "tags";
 
@@ -6,7 +6,7 @@ export declare namespace AusleseTypes
     {
         label: string;
         disabled?: boolean;
-        value?: string|number|null;
+        value: string|number;
         payload?: any;
     }
 
@@ -24,5 +24,5 @@ export declare namespace AusleseTypes
         toggle?: () => void;
     }
 
-    export type Selections = WeakMap<Choice, boolean>;
+    export type Selection = Record<string|number, true>;
 }
