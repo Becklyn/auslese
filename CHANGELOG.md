@@ -1,3 +1,9 @@
+2.0.2
+=====
+
+*   (bug) Rename `createChoiceGroup()` to `prepareMinimalChoices()` and fix return type.
+
+
 2.0.1
 =====
 
