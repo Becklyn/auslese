@@ -8,7 +8,7 @@
         "type": "git",
         "url": "git://github.com/Becklyn/auslese.git"
     },
-    "version": "2.0.1",
+    "version": "2.0.2",
     "main": "js/index.js",
     "scripts": {
         "build": "npm run clean && ./node_modules/.bin/tsc -v && npm run build:ts",
