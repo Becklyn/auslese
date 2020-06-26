@@ -5,8 +5,8 @@ export module AusleseTypes
     export interface Choice
     {
         label: string;
-        disabled?: boolean;
         value: string|number;
+        disabled?: boolean;
         payload?: any;
     }
 

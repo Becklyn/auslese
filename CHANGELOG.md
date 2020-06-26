@@ -3,9 +3,12 @@
 
 *   (bc) `<Auslese>` now only accepts `Group`s as `choices`.
 *   (bc) Refactored selections to just use a value map, instead of a actual reference map (via `Weakmap`).
+*   (bc) `value` for `Choice`s is now required.
+*   (bc) Use `module` declaration instead of `namespace` for TypeScript types.
 *   (feature) Automounting now correctly handles preferred choices.
 *   (feature) Added proper support for duplicate values (which can occur for preferred choices).
 *   (improvement) Added `preferredHeadline` automount option, to set the headline of the "preferred choices" group.
+*   (internal) Completely refactor the testing infrastructure.
 
 
 
