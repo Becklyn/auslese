@@ -3,6 +3,8 @@ import matchSorter from "match-sorter";
 
 /**
  * Returns whether the node is a child element from the parent (includes being the node itself).
+ *
+ * @internal
  */
 export function isChildElement (parent: Node, node: Node) : boolean
 {
@@ -23,6 +25,8 @@ export function isChildElement (parent: Node, node: Node) : boolean
 
 /**
  * Builds the choice groups for rendering
+ *
+ * @internal
  */
 export function buildRenderGroups (
     groups: AusleseTypes.Group[],
@@ -78,6 +82,8 @@ export function buildRenderGroups (
 
 /**
  * Flatten the choices.
+ *
+ * @internal
  */
 export function flattenChoices (groups: AusleseTypes.Group[]) : AusleseTypes.Choice[]
 {
@@ -92,48 +98,9 @@ export function flattenChoices (groups: AusleseTypes.Group[]) : AusleseTypes.Cho
 
 
 /**
- * Prepares the mixed choices + groups to just be groups
- *
- * @deprecated move this to automount and only allow groups from now on
- */
-export function sanitizeGroups (unsorted: (AusleseTypes.Choice|AusleseTypes.Group)[]) : AusleseTypes.Group[]
-{
-    let groups: AusleseTypes.Group[] = [];
-    let lastGroup: AusleseTypes.Group|null = null;
-
-    unsorted.forEach(
-        entry => {
-            if ((entry as AusleseTypes.Group).headline !== undefined)
-            {
-                if (lastGroup !== null)
-                {
-                    groups.push(lastGroup);
-                    lastGroup = null;
-                }
-
-                groups.push(entry as AusleseTypes.Group);
-                return;
-            }
-
-            if (lastGroup === null)
-            {
-                lastGroup = {headline: null, choices: []};
-            }
-
-            lastGroup.choices.push(entry as AusleseTypes.Choice);
-        }
-    );
-
-    if (null !== lastGroup)
-    {
-        groups.push(lastGroup);
-    }
-
-    return groups;
-}
-
-/**
  * Filters duplicate choices in the choice list
+ *
+ * @internal
  */
 export function filterDuplicateChoices (choices: AusleseTypes.Choice[]) : AusleseTypes.Choice[]
 {
