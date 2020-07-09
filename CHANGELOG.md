@@ -1,3 +1,11 @@
+2.1.2
+=====
+
+*   (improvement) Make `searchable` configurable.
+*   (internal) Mark functions as `@internal`.
+*   (internal) Remove obsolete function.
+
+
 2.1.1
 =====
 
