@@ -1,3 +1,9 @@
+2.1.2
+=====
+
+*   (improvement) Make `searchable` configurable.
+
+
 2.1.1
 =====
 

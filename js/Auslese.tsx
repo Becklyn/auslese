@@ -5,6 +5,7 @@ import {CurrentLabels} from "./components/CurrentLabels";
 import {CurrentText} from "./components/CurrentText";
 import {Dropdown} from "./components/Dropdown";
 import {Group} from "./components/Group";
+import {isSearchable} from "./lib/config-helper";
 import {
     buildRenderGroups,
     flattenChoices,
@@ -26,6 +27,14 @@ export interface AusleseProps
     emptyMessage?: string;
     resetText?: string;
     selection?: AusleseTypes.Selection;
+
+    /**
+     * Flag whether the input should be searchable.
+     * Tags will never be searchable.
+     *
+     * Default is to enable search if there are more than 5 entries.
+     */
+    searchable?: boolean;
 }
 
 
@@ -126,7 +135,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         const renderGroups = buildRenderGroups(choices, selection, type, searchQuery);
         const placeholder = props.placeholder || "Bitte wählen";
         const isClearable = selectedChoices.some(choice => !choice.disabled);
-        const hasSearchForm = "tags" !== type && flattened.length > 5;
+        const hasSearchForm = isSearchable(type, props.searchable, flattened);
         // you can reset the form if it is either multi select or if there is a placeholder
         const canClear = "single" !== type || !!props.placeholder;
 
