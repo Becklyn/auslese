@@ -237,4 +237,7 @@ export function mountAusleseOnElement (select: HTMLElement, options: AusleseMoun
 
     // replace all existing classes
     select.setAttribute("class", "auslese-bound-select");
+    // the original select is still focusable, so we need to remove it from the tab
+    // order, so that tab-navigation isn't broken.
+    select.setAttribute("tabindex", "-1");
 }
