@@ -1,3 +1,10 @@
+2.1.3
+=====
+
+*   (bug) Keep bound selects focusable (for browser inline validation).
+*   (improvement) Bump all dependencies.
+
+
 2.1.2
 =====
 

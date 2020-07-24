@@ -7,7 +7,7 @@ import Terser from "terser";
 let files = {
     'index.js': 75,
     'Auslese.js': 3700,
-    'automount.js': 1725,
+    'automount.js': 1750,
     'lib/helper.js': 1025,
     'lib/icons.js': 1350,
     'components/Choice.js': 500,
