@@ -25,4 +25,8 @@ export module AusleseTypes
     }
 
     export type Selection = Record<string|number, true>;
+
+    export interface ChangeEvent {
+        selection: Selection;
+    }
 }
