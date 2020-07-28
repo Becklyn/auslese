@@ -27,6 +27,9 @@ interface AusleseMountOptions
 }
 
 
+export const CHANGE_EVENT = "auslese:change";
+
+
 /**
  * Returns whether the given option is the "preferred" marker
  */
@@ -201,7 +204,7 @@ function updateSelectState (
         option.selected = selection[option.value];
     });
 
-    trigger(select, "auslese:change", {
+    trigger(select, CHANGE_EVENT, {
         selection: selection,
     } as ChangeEvent);
 }

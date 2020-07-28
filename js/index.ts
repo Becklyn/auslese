@@ -1,2 +1,2 @@
 export {Auslese} from "./Auslese";
-export {mountAuslese} from "./automount";
+export {mountAuslese, CHANGE_EVENT} from "./automount";
