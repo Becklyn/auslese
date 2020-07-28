@@ -1,4 +1,4 @@
-2.2.0 (unreleased)
+2.2.0
 =====
 
 *   (feature) Trigger `auslese:change` event for auto-mounted selects, as a replacement for the original `change` event.
