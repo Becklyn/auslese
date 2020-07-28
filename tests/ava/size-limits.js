@@ -5,7 +5,7 @@ import Terser from "terser";
 
 // mapping of files to limit
 let files = {
-    'index.js': 75,
+    'index.js': 100,
     'Auslese.js': 3700,
     'automount.js': 1850,
     'lib/helper.js': 1025,
