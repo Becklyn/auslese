@@ -3,6 +3,8 @@ import {extend} from "mojave/extend";
 import {render, createElement} from "preact";
 import {AusleseTypes} from "./@types/auslese";
 import {Auslese, AusleseProps} from "./Auslese";
+import {trigger} from "mojave/dom/events";
+import ChangeEvent = AusleseTypes.ChangeEvent;
 
 
 interface PreferredGroupOptions
@@ -198,6 +200,10 @@ function updateSelectState (
     options.forEach(option => {
         option.selected = selection[option.value];
     });
+
+    trigger(select, "auslese:change", {
+        selection: selection,
+    } as ChangeEvent);
 }
 
 
