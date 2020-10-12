@@ -1,3 +1,9 @@
+2.2.1
+=====
+
+*   (bug) Correctly handle `disabled` state. That includes mounting on an `<select disabled>` Element or passing in the `disabled` prop during mounting.  
+
+
 2.2.0
 =====
 

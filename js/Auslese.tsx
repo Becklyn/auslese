@@ -12,6 +12,7 @@ import {
     isChildElement,
 } from "./lib/helper";
 import {ChevronIcon} from "./lib/icons";
+import {classes} from "mojave/classes";
 
 
 export interface AusleseProps
@@ -22,6 +23,7 @@ export interface AusleseProps
     dropdownHolder?: HTMLElement;
     dropdownClass?: string|null;
     class?: string|null;
+    disabled?: boolean;
     placeholder?: string;
     emptyResultsMessage?: string;
     emptyMessage?: string;
@@ -48,6 +50,7 @@ export interface AusleseState
     selection: AusleseTypes.Selection;
     loading: boolean;
     focus: AusleseTypes.Choice | null;
+    disabled: boolean;
 }
 
 
@@ -106,6 +109,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             type: props.type || "single",
             loading: false,
             focus: null,
+            disabled: props.disabled || false,
         };
     }
 
@@ -139,6 +143,13 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         // you can reset the form if it is either multi select or if there is a placeholder
         const canClear = "single" !== type || !!props.placeholder;
 
+        let rootClasses = classes({
+            "auslese": true,
+            [`auslese-${type}-select`]: true,
+            "auslese-open": state.dropdown,
+            "auslese-disabled": state.disabled,
+            [props.class || ""]: true,
+        });
         let dropdownContent: preact.ComponentChildren;
 
         // if has search and no matches
@@ -187,10 +198,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             );
         }
 
-        return <div
-            class={`auslese auslese-${type}-select ${state.dropdown ? "auslese-open" : ""} ${props.class || ""}`}
-            onKeyDown={e => this.onKeyDown(e, renderGroups)}
-        >
+        return <div class={rootClasses} onKeyDown={e => this.onKeyDown(e, renderGroups)}>
             {"tags" === type ? (
                 <CurrentLabels
                     choices={selectedChoices}
@@ -208,7 +216,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     selected={selectedChoices}
                 />
             )}
-            <button type="button" class="auslese-current-chevron" onClick={event => this.toggleOpen(event)}>
+            <button type="button" class="auslese-current-chevron" onClick={event => this.toggleOpen(event)} disabled={state.disabled}>
                 <ChevronIcon/>
             </button>
         </div>;
@@ -272,6 +280,11 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private reset (event: Event): void
     {
+        if (this.props.disabled)
+        {
+            return;
+        }
+
         event.stopPropagation();
 
         this.setState(
@@ -377,6 +390,11 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private toggleOpen (event?: Event)
     {
+        if (this.props.disabled)
+        {
+            return;
+        }
+
         if (event)
         {
             event.preventDefault();
@@ -421,6 +439,11 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private onInput (event: Event): void
     {
+        if (this.props.disabled)
+        {
+            return;
+        }
+
         this.setState({
             search: (event.target as HTMLInputElement).value,
         }, () => this.open());
@@ -482,6 +505,11 @@ export class Auslese extends Component<AusleseProps, AusleseState>
      */
     private onKeyDown (event: KeyboardEvent, renderGroups: AusleseTypes.Group[]): void
     {
+        if (this.props.disabled)
+        {
+            return;
+        }
+
         const key = event.key.toLowerCase();
 
         switch (key)

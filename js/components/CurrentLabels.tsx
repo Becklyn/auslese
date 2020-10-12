@@ -15,6 +15,7 @@ export interface CurrentLabelsProps
     onRemove: (choice: AusleseTypes.Choice) => void;
     onFocus: () => void;
     inputRef: (element: HTMLInputElement) => void;
+    disabled?: boolean;
 }
 
 
@@ -43,6 +44,7 @@ export function CurrentLabels (props: CurrentLabelsProps): JSX.Element
                 id={randomId}
                 onFocus={props.onFocus}
                 ref={props.inputRef}
+                disabled={props.disabled}
             />
         </label>
     );

@@ -24,6 +24,7 @@ interface AusleseMountOptions
      * The headline of the preferred group + the one after it
      */
     preferred?: PreferredGroupOptions;
+    disabled?: boolean;
 }
 
 
@@ -167,6 +168,7 @@ export function parseSelect (
         type: select.multiple
             ? ("tags" === select.dataset.auslese ? "tags" : "multiple")
             : "single",
+        disabled: select.disabled,
     };
 }
 
