@@ -24,6 +24,7 @@ interface AusleseMountOptions
      * The headline of the preferred group + the one after it
      */
     preferred?: PreferredGroupOptions;
+    preferredOptionsGroupText?: string;
     disabled?: boolean;
 }
 
@@ -57,7 +58,8 @@ function safeSetGroupHeadline (group: AusleseTypes.Group, headline?: string|null
  */
 export function parseSelect (
     select: HTMLSelectElement,
-    preferred?: PreferredGroupOptions
+    preferred?: PreferredGroupOptions,
+    options?: AusleseMountOptions
 ) : AusleseProps
 {
     const selectChildren = children<HTMLOptionElement|HTMLOptGroupElement>(select);
@@ -76,6 +78,9 @@ export function parseSelect (
         selectChildren.shift();
     }
 
+    const preferredOptionsHeadline = undefined !== options && undefined !== options.preferredOptionsGroupText
+        ? options.preferredOptionsGroupText
+        : "Preferred Options";
 
     selectChildren.forEach(
         element =>
@@ -130,7 +135,7 @@ export function parseSelect (
                 if (null !== lastGroup)
                 {
                     const headline = preferred ? preferred.headline : null;
-                    safeSetGroupHeadline(lastGroup, headline || "Preferred Options");
+                    safeSetGroupHeadline(lastGroup, headline || preferredOptionsHeadline);
 
                     nextGroupMergeHeadline = preferred ? (preferred.after || null) : null;
                     choices.push(lastGroup);
@@ -240,7 +245,7 @@ export function mountAusleseOnElement (select: HTMLElement, options: AusleseMoun
         return;
     }
 
-    const props = extend(parseSelect(select, options.preferred), options) as AusleseProps;
+    const props = extend(parseSelect(select, options.preferred, options), options) as AusleseProps;
     props.onChange = selection => updateSelectState(select, selection);
     props.dropdownHolder = options.dropdownHolder;
 

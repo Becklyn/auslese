@@ -1,3 +1,11 @@
+2.3.0
+=====
+
+*   (feature) Added `preferredOptionsGroupText` to `AusleseMountOptions` in order to allow overriding the default „Preferred Options” text.
+    Setting this option is now possible with the `mountAuslese*` functions.
+    You can now optionally pass in an `AusleseMountOptions` object into `parseSelect`. 
+
+
 2.2.1
 =====
 
