@@ -1,5 +1,6 @@
 {
     "name": "auslese",
+    "version": "2.3.0",
     "description": "A tiny + fast choice / dropdown preact component.",
     "license": "BSD-3-Clause",
     "author": "Becklyn Studios <hello@becklyn.com>",
@@ -8,7 +9,6 @@
         "type": "git",
         "url": "git://github.com/Becklyn/auslese.git"
     },
-    "version": "2.3.0",
     "main": "js/index.js",
     "scripts": {
         "build": "npm run clean && ./node_modules/.bin/tsc -v && npm run build:ts",
@@ -18,7 +18,7 @@
         "prepublishOnly": "npm run build",
         "test": "npm run test:build && npm run test:lib",
         "test:build": "ava",
-        "test:lib": "node_modules/.bin/cypress run --record --key 8c940896-0fff-43aa-906f-ca1bda96d8ba",
+        "test:lib": "node_modules/.bin/cypress run --record --key 481e3c26-1e58-4267-b0ce-469cb401d60d\n",
         "test:start": "node_modules/.bin/cypress open"
     },
     "dependencies": {
@@ -35,7 +35,7 @@
         "@types/match-sorter": "^4.0.0",
         "ava": "^3.10.1",
         "babel-loader": "^8.1.0",
-        "cypress": "^4.11.0",
+        "cypress": "^8.0.0",
         "glob": "^7.1.6",
         "node-sass": "^4.14.1",
         "terser": "^4.8.0",

@@ -6,14 +6,14 @@ import Terser from "terser";
 // mapping of files to limit
 let files = {
     'index.js': 100,
-    'Auslese.js': 3900,
+    'Auslese.js': 3950,
     'automount.js': 1950,
-    'lib/helper.js': 1025,
+    'lib/helper.js': 1050,
     'lib/icons.js': 1350,
     'components/Choice.js': 500,
-    'components/CurrentLabels.js': 580,
-    'components/CurrentText.js': 300,
-    'components/Group.js': 425,
+    'components/CurrentLabels.js': 650,
+    'components/CurrentText.js': 350,
+    'components/Group.js': 500,
 };
 
 

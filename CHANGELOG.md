@@ -6,6 +6,8 @@
     * the „selected” header inside the dropdown
     * when rendering the current text/tags instead of the dropdown's placeholder
 
+* (internal) Upgrade Cypress and move over from private account to Becklyn organization.
+
 
 2.3.0
 =====
