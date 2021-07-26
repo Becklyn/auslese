@@ -34,7 +34,7 @@ jobs:
                 command: npm run-script build
             - run:
                 name: npm audit
-                command: npm audit
+                command: npm audit --production
             - run:
                 name: Prettier package.json
                 command: npx prettier-package-json package.json --list-different --tab-width 4
