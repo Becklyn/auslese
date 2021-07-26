@@ -8,6 +8,7 @@ export module AusleseTypes
         value: string|number;
         disabled?: boolean;
         payload?: any;
+        group?: FlatGroup;
     }
 
     export interface Group
@@ -15,6 +16,12 @@ export module AusleseTypes
         headline: string|null;
         header?: boolean;
         choices: Choice[];
+    }
+
+    export interface FlatGroup
+    {
+        headline: string|null;
+        header?: boolean;
     }
 
 
@@ -26,7 +33,8 @@ export module AusleseTypes
 
     export type Selection = Record<string|number, true>;
 
-    export interface ChangeEvent {
+    export interface ChangeEvent
+    {
         selection: Selection;
     }
 }

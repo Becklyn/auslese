@@ -29,6 +29,7 @@ export interface AusleseProps
     emptyMessage?: string;
     resetText?: string;
     selection?: AusleseTypes.Selection;
+    includeGroupHeadlineInChoiceLabel?: boolean;
 
     /**
      * Flag whether the input should be searchable.
@@ -56,7 +57,7 @@ export interface AusleseState
 
 export class Auslese extends Component<AusleseProps, AusleseState>
 {
-    private onBodyClickBound: (event: Event) => void;
+    private readonly onBodyClickBound: (event: Event) => void;
     private dropdownHolder: Element;
     private labelInput: HTMLInputElement|undefined;
 
@@ -142,6 +143,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         const hasSearchForm = isSearchable(type, props.searchable, flattened);
         // you can reset the form if it is either multi select or if there is a placeholder
         const canClear = "single" !== type || !!props.placeholder;
+        const includeGroupHeadlineInChoiceLabel =!!props.includeGroupHeadlineInChoiceLabel;
 
         let rootClasses = classes({
             "auslese": true,
@@ -162,16 +164,19 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         }
         else
         {
-            dropdownContent = renderGroups.map(group => (
-                <Group
-                    group={group}
-                    selection={selection}
-                    onToggle={choice => this.toggleChoice(choice)}
-                    onMouseEnter={choice => this.focusChoice(choice, false)}
-                    focus={state.focus}
-                    multiple={"single" !== type}
-                />
-            ));
+            dropdownContent = renderGroups.map(group => {
+                return (
+                    <Group
+                        group={group}
+                        selection={selection}
+                        onToggle={choice => this.toggleChoice(choice)}
+                        onMouseEnter={choice => this.focusChoice(choice, false)}
+                        focus={state.focus}
+                        multiple={"single" !== type}
+                        includeGroupHeadlineInSelectedChoiceLabel={includeGroupHeadlineInChoiceLabel}
+                    />
+                );
+            });
         }
 
         if (state.dropdown)
@@ -208,12 +213,14 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                     onRemove={choice => this.toggleChoice(choice)}
                     onFocus={() => this.open()}
                     inputRef={element => this.labelInput = element}
+                    includeGroupHeadlineInSelectedChoiceLabel={includeGroupHeadlineInChoiceLabel}
                 />
             ) : (
                 <CurrentText
                     onClick={event => this.toggleOpen(event)}
                     placeholder={placeholder}
                     selected={selectedChoices}
+                    includeGroupHeadlineInSelectedChoiceLabel={includeGroupHeadlineInChoiceLabel}
                 />
             )}
             <button type="button" class="auslese-current-chevron" onClick={event => this.toggleOpen(event)} disabled={state.disabled}>
@@ -298,7 +305,8 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         const empty: AusleseTypes.Selection = {};
         const {flattened, selection} = this.state;
 
-        flattened.forEach(choice => {
+        flattened.forEach(choice =>
+        {
             // keep disabled selected choices
             if (choice.disabled && selection[choice.value])
             {
@@ -478,14 +486,24 @@ export class Auslese extends Component<AusleseProps, AusleseState>
             return this.focusChoice(first, true);
         }
 
-        const index = list.indexOf(this.state.focus);
+        let focusIndex = -1;
 
-        if (-1 === index)
+        for (let i = 0; i < list.length; ++i)
+        {
+            if (list[i] === this.state.focus)
+            {
+                focusIndex = i;
+
+                break;
+            }
+        }
+
+        if (-1 === focusIndex)
         {
             return this.focusChoice(first, true);
         }
 
-        const newIndex = index + (up ? -1 : 1);
+        const newIndex = focusIndex + (up ? -1 : 1);
 
         if (newIndex < 0)
         {

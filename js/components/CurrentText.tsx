@@ -1,8 +1,7 @@
 import {classes} from "mojave/classes";
-import {h} from "preact";
+import {h, JSX} from "preact";
 import {AusleseTypes} from "../@types/auslese";
-import {filterDuplicateChoices} from "../lib/helper";
-import JSX = preact.createElement.JSX;
+import {filterDuplicateChoices, generateHierarchicalChoiceTextLabel} from "../lib/helper";
 
 
 interface CurrentTextProps
@@ -10,13 +9,14 @@ interface CurrentTextProps
     onClick: EventListener;
     selected: AusleseTypes.Choice[];
     placeholder: string;
+    includeGroupHeadlineInSelectedChoiceLabel: boolean;
 }
 
 export function CurrentText (props: CurrentTextProps): JSX.Element
 {
     const selection = props.selected;
     const text = selection.length
-        ? filterDuplicateChoices(selection).map(s => s.label).join(", ")
+        ? filterDuplicateChoices(selection).map(choice => generateHierarchicalChoiceTextLabel(choice, props.includeGroupHeadlineInSelectedChoiceLabel)).join(", ")
         : props.placeholder;
 
     return (

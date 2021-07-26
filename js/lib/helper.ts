@@ -35,12 +35,16 @@ export function buildRenderGroups (
     search: string
 ) : AusleseTypes.Group[]
 {
-    const selected: AusleseTypes.Group = {headline: null, choices: [], header: true};
+    const selected: AusleseTypes.Group = {
+        headline: null,
+        choices: [],
+        header: true,
+    };
     const result: AusleseTypes.Group[] = [];
 
     if ("" !== search)
     {
-        const filtered = matchSorter(flattenChoices(groups), search, {keys: ["label"]});
+        const filtered = matchSorter(flattenChoices(groups), search, {keys: ["choice.label"]});
 
         return filtered.length
             ? [{headline: null, choices: filtered}]
@@ -50,7 +54,10 @@ export function buildRenderGroups (
     groups.forEach(
         group =>
         {
-            let transformed: AusleseTypes.Group = {headline: group.headline, choices: []};
+            const transformed: AusleseTypes.Group = {
+                headline: group.headline,
+                choices: [],
+            };
 
             group.choices.forEach(
                 choice =>
@@ -59,7 +66,15 @@ export function buildRenderGroups (
                         ? selected
                         : transformed;
 
-                    list.choices.push(choice);
+                    list.choices.push({
+                        ...choice,
+                        // Transform the Group into a FlatGroup, which is more memory performant and doesn't
+                        // cause us to hold the entire Group with all of its Choices for every Choice in-memory.
+                        group: {
+                            header: group.header,
+                            headline: group.headline,
+                        },
+                    });
                 }
             );
 
@@ -87,10 +102,18 @@ export function buildRenderGroups (
  */
 export function flattenChoices (groups: AusleseTypes.Group[]) : AusleseTypes.Choice[]
 {
-    let flattened: AusleseTypes.Choice[] = [];
+    const flattened: AusleseTypes.Choice[] = [];
 
     groups.forEach(
-        group => group.choices.forEach(c => flattened.push(c))
+        group => group.choices.forEach(choice => flattened.push({
+            ...choice,
+            // Transform the Group into a FlatGroup, which is more memory performant and doesn't
+            // cause us to hold the entire Group with all of its Choices for every Choice in-memory.
+            group: {
+                headline: group.headline,
+                header: group.header,
+            },
+        }))
     );
 
     return flattened;
@@ -106,20 +129,22 @@ export function filterDuplicateChoices (choices: AusleseTypes.Choice[]) : Ausles
 {
     const map: Record<string, Record<string, AusleseTypes.Choice>> = {};
 
-    choices.forEach(choice => {
-        if (!map[choice.value])
+    choices.forEach(flattened =>
+    {
+        if (!map[flattened.value])
         {
-            map[choice.value] = {};
+            map[flattened.value] = {};
         }
 
         // always keep the first one, to keep the relative order
-        if (!map[choice.value][choice.label])
+        if (!map[flattened.value][flattened.label])
         {
-            map[choice.value][choice.label] = choice;
+            map[flattened.value][flattened.label] = flattened;
         }
-    })
+    });
 
     const filtered: AusleseTypes.Choice[] = [];
+
     for (const value in map)
     {
         for (const label in map[value])
@@ -129,4 +154,22 @@ export function filterDuplicateChoices (choices: AusleseTypes.Choice[]) : Ausles
     }
 
     return filtered;
+}
+
+
+/**
+ * @internal
+ */
+export function generateHierarchicalChoiceTextLabel (choice: AusleseTypes.Choice, includeGroupHeadlineInChoiceLabel: boolean) : string
+{
+    const group = choice.group;
+
+    if (group && includeGroupHeadlineInChoiceLabel)
+    {
+        return group.headline
+            ? `${group.headline}: ${choice.label}`
+            : choice.label;
+    }
+
+    return choice.label;
 }

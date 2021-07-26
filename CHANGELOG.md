@@ -1,3 +1,12 @@
+2.4.0
+=====
+
+* (feature) Add new option `includeGroupHeadlineInChoiceLabel` to include a `Choice`'s `Group`'s headline as prefix for:
+
+    * the „selected” header inside the dropdown
+    * when rendering the current text/tags instead of the dropdown's placeholder
+
+
 2.3.0
 =====
 

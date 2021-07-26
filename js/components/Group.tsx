@@ -1,9 +1,8 @@
 import {classes} from "mojave/classes";
-import {h} from "preact";
+import {h, JSX} from "preact";
 import {AusleseTypes} from "../@types/auslese";
 import {Choice} from "./Choice";
-import JSX = preact.createElement.JSX;
-
+import {generateHierarchicalChoiceTextLabel} from "../lib/helper";
 
 
 export interface GroupProps
@@ -14,6 +13,7 @@ export interface GroupProps
     onMouseEnter: (choice: AusleseTypes.Choice) => void;
     focus: AusleseTypes.Choice|null;
     multiple: boolean;
+    includeGroupHeadlineInSelectedChoiceLabel: boolean;
 }
 
 
@@ -21,6 +21,7 @@ export interface GroupProps
 export function Group (props: GroupProps): JSX.Element|null
 {
     const group = props.group;
+    const includeGroupHeadlineInSelectedChoiceLabel = !!group.header && props.includeGroupHeadlineInSelectedChoiceLabel;
 
     if (!group.choices.length)
     {
@@ -40,7 +41,7 @@ export function Group (props: GroupProps): JSX.Element|null
             <ul>
                 {group.choices.map(choice => (
                     <Choice
-                        label={choice.label}
+                        label={generateHierarchicalChoiceTextLabel(choice, includeGroupHeadlineInSelectedChoiceLabel)}
                         selected={props.selection[choice.value]}
                         disabled={!!choice.disabled}
                         focus={props.focus === choice}
