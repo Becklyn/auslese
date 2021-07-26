@@ -1,6 +1,6 @@
 {
     "name": "auslese",
-    "version": "2.3.0",
+    "version": "2.4.0",
     "description": "A tiny + fast choice / dropdown preact component.",
     "license": "BSD-3-Clause",
     "author": "Becklyn Studios <hello@becklyn.com>",
