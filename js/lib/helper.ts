@@ -44,7 +44,7 @@ export function buildRenderGroups (
 
     if ("" !== search)
     {
-        const filtered = matchSorter(flattenChoices(groups), search, {keys: ["choice.label"]});
+        const filtered = matchSorter(flattenChoices(groups), search, {keys: ["label"]});
 
         return filtered.length
             ? [{headline: null, choices: filtered}]

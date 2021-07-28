@@ -1,3 +1,9 @@
+2.4.1
+=====
+
+*   (bug) Fix search not working, which have been broke in the previous version on accident.
+
+
 2.4.0
 =====
 
