@@ -1,3 +1,12 @@
+2.5.0
+=====
+
+* (feature) Add more options:
+    *  `overlayClass`: (optional) add a css class to the current `auslese-overlay` making possible styling customizations.
+    *  `hideResetButton`: (optional) hide the reset button. 
+    *  `placeholderLock`: (optional) make the placeholder always visible. It is useful when you want to make visible the placeholder or a custom text and not the selected value(s).
+
+
 2.4.1
 =====
 
