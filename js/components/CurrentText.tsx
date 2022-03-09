@@ -9,22 +9,27 @@ interface CurrentTextProps
     onClick: EventListener;
     selected: AusleseTypes.Choice[];
     placeholder: string;
+    placeholderLock?: boolean;
     includeGroupHeadlineInSelectedChoiceLabel: boolean;
 }
 
 export function CurrentText (props: CurrentTextProps): JSX.Element
 {
     const selection = props.selected;
-    const text = selection.length
-        ? filterDuplicateChoices(selection).map(choice => generateHierarchicalChoiceTextLabel(choice, props.includeGroupHeadlineInSelectedChoiceLabel)).join(", ")
-        : props.placeholder;
+    let text = '';
+
+    if (props.placeholderLock || !selection.length) {
+        text = props.placeholder;
+    } else {
+        text = filterDuplicateChoices(selection).map(choice => generateHierarchicalChoiceTextLabel(choice, props.includeGroupHeadlineInSelectedChoiceLabel)).join(", ");
+    }
 
     return (
         <div
             class={classes({
                 "auslese-current": true,
                 "auslese-current-text": true,
-                "auslese-placeholder": !selection.length,
+                "auslese-placeholder": props.placeholderLock || !selection.length,
             })}
             onClick={props.onClick}
         >{text}</div>

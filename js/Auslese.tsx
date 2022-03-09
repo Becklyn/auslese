@@ -22,12 +22,15 @@ export interface AusleseProps
     onChange?: (selection: Readonly<AusleseTypes.Selection>) => void;
     dropdownHolder?: HTMLElement;
     dropdownClass?: string|null;
+    overlayClass?: string|null;
     class?: string|null;
     disabled?: boolean;
     placeholder?: string;
+    placeholderLock?: boolean;
     emptyResultsMessage?: string;
     emptyMessage?: string;
     resetText?: string;
+    hideResetButton?: boolean;
     selection?: AusleseTypes.Selection;
     includeGroupHeadlineInChoiceLabel?: boolean;
 
@@ -140,6 +143,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         const renderGroups = buildRenderGroups(choices, selection, type, searchQuery);
         const placeholder = props.placeholder || "Bitte wählen";
         const isClearable = selectedChoices.some(choice => !choice.disabled);
+        const hideResetButton = props.hideResetButton || false;
         const hasSearchForm = isSearchable(type, props.searchable, flattened);
         // you can reset the form if it is either multi select or if there is a placeholder
         const canClear = "single" !== type || !!props.placeholder;
@@ -183,7 +187,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         {
             render((
                     <Dropdown
-                        isClearable={canClear && isClearable}
+                        isClearable={canClear && isClearable && !hideResetButton}
                         resetText={props.resetText || "Auswahl zurücksetzen"}
                         search={state.search}
                         placeholder={placeholder}
@@ -219,6 +223,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
                 <CurrentText
                     onClick={event => this.toggleOpen(event)}
                     placeholder={placeholder}
+                    placeholderLock={props.placeholderLock}
                     selected={selectedChoices}
                     includeGroupHeadlineInSelectedChoiceLabel={includeGroupHeadlineInChoiceLabel}
                 />
@@ -244,7 +249,7 @@ export class Auslese extends Component<AusleseProps, AusleseState>
         document.body.removeEventListener("click", this.onBodyClickBound, false);
 
         const dropdown = document.createElement("div");
-        dropdown.setAttribute("class", "auslese-overlay");
+        dropdown.setAttribute("class", "auslese-overlay " + (this.props.overlayClass || ''));
         this.dropdownHolder.appendChild(dropdown);
 
         document.body.addEventListener("click", this.onBodyClickBound, false);
